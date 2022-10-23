@@ -1,0 +1,66 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container-fluid">
+    {% comment %} {{msg}} {% endcomment %}
+{% for msg in messages %}
+  <div class="alert {{ message.tags     qwwertyuio}} alert-dismissible fade show" role="alert">
+    <strong>{{msg}}!</strong> 
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+    <div class="row  align-items-center">
+        <div class="col mx-auto ">
+            <h4 class="">Department</h4>
+		</div>
+        <div class="col mx-auto d-flex justify-content-end">
+            <a class="btn btn-primary" href="{% url 'department/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
+        </div>
+    </div>
+    
+<hr>
+    <div class="row">
+        
+            <div class="table-responsive">
+                <table class="table table-hover table-sm table-striped ">
+                    <thead class="fw-bold text-center">
+                      <tr>
+                        <th class="fw-bold" scope="col">ID</th>
+                        <th class="fw-bold" scope="col">Name</th>
+                        <th class="fw-bold" scope="col">Description</th>
+                        <th class="fw-bold" scope="col">Status</th>
+                        <th class="text-center py-1 fw-bold">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="text-center">
+                        {% for department in departments %}
+                        <th scope="row">{{ department.Dept_Id }}</th>
+                        <td>{{ department.Dept_Name }}</td>
+                        <td>{{ department.Dept_description }}</td>
+                        <td>{{ department.Dept_Status }}</td>
+                        <td>
+                            <a href="department/manage?id={{department.Dept_Id }}"  ><i class="material-icons">edit</i></a>
+                            <a href="department/delete?id={{department.Dept_Id }}"  ><i class="material-icons">delete</i></a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        
+    </div>
+</div>
+
+{% endblock content %} {% block ScriptBlock %}
+<style>
+  alert('{{ msg }}');
+</style>
+{% endblock ScriptBlock %}
