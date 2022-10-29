@@ -17,10 +17,10 @@
 
     <div class="row  align-items-center">
         <div class="col mx-auto ">
-            <h4 class="">Department</h4>
+            <h4 class="">Role</h4>
 		</div>
         <div class="col mx-auto d-flex justify-content-end">
-            <a class="btn btn-primary" href="{% url 'department/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
+            <a class="btn btn-primary" href="{% url 'role/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
         </div>
     </div>
     
@@ -40,15 +40,14 @@
                     </thead>
                     <tbody>
                       <tr class="text-center">
-                        {% for department in departments %}
-                        <th class="text-center" scope="row">{{ department.Dept_Id }}</th>
-                        <td class="text-center">{{ department.Dept_Name }}</td>
-                        <td class="text-center">{{ department.Dept_description }}</td>
-                        {% comment %} <td class="text-center">{{ department.Dept_Status }}</td> {% endcomment %}
+                        {% for role in roles %}
+                        <th class="text-center" scope="row">{{ role.Role_Id }}</th>
+                        <td class="text-center">{{ role.Role_Name }}</td>
+                        <td class="text-center">{{ role.Role_description }}</td>
                         <td class="d-flex justify-content-center" >
                           <div class="switchToggle">
                             <input type="checkbox" class="form-control"id="switch" 
-                            {% if department.Dept_Status == 1 %}
+                            {% if role.Role_Status == 1 %}
                               checked onclick="return false"
                             {% endif %}>
                             <label for="switch">Toggle</label>
@@ -56,8 +55,8 @@
                       </td>
                         
                         <td class="text-center">
-                            <a href="department/manage?id={{department.Dept_Id }}"  ><i class="material-icons">edit</i></a>
-                            <a href="department/delete?id={{department.Dept_Id }}" 
+                            <a href="role/manage?id={{role.Role_Id }}"  ><i class="material-icons">edit</i></a>
+                            <a href="role/delete?id={{role.Role_Id }}" 
                             onclick="return confirm('Are you sure you want to delete?')"><i class="material-icons">delete</i></a>
                         </td>
                       </tr>

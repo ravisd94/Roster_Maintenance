@@ -17,10 +17,10 @@
 
     <div class="row  align-items-center">
         <div class="col mx-auto ">
-            <h4 class="">Department</h4>
+            <h4 class="">Employee</h4>
 		</div>
         <div class="col mx-auto d-flex justify-content-end">
-            <a class="btn btn-primary" href="{% url 'department/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
+            <a class="btn btn-primary" href="{% url 'employee/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
         </div>
     </div>
     
@@ -32,23 +32,28 @@
                     <thead class="fw-bold text-center">
                       <tr>
                         <th class="fw-bold" scope="col">ID</th>
-                        <th class="fw-bold" scope="col">Name</th>
-                        <th class="fw-bold" scope="col">Description</th>
+                        <th class="fw-bold" scope="col">Full Name</th>
+                        <th class="fw-bold" scope="col">Email</th>
+                        <th class="fw-bold" scope="col">Department</th>
+                        <th class="fw-bold" scope="col">Joining Date</th>
+                        <th class="fw-bold" scope="col">Gender</th>
                         <th class="fw-bold" scope="col">Status</th>
                         <th class="text-center py-1 fw-bold">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr class="text-center">
-                        {% for department in departments %}
-                        <th class="text-center" scope="row">{{ department.Dept_Id }}</th>
-                        <td class="text-center">{{ department.Dept_Name }}</td>
-                        <td class="text-center">{{ department.Dept_description }}</td>
-                        {% comment %} <td class="text-center">{{ department.Dept_Status }}</td> {% endcomment %}
+                        {% for employee in employees %}
+                        <th class="text-center" scope="row">{{ employee.Emp_Id }}</th>
+                        <td class="text-center">{{ employee.First_Name }}  {{ employee.Middle_Name }} {{ employee.Last_Name }}</td>
+                        <td class="text-center">{{ employee.Email_ID }}</td>
+                        <th class="text-center" scope="row">{{ employee.Dept_Id }}</th>
+                        <th class="text-center" scope="row">{{ employee.Joining_Date }}</th>
+                        <th class="text-center" scope="row">{{ employee.Emp_Sex }}</th>
                         <td class="d-flex justify-content-center" >
                           <div class="switchToggle">
                             <input type="checkbox" class="form-control"id="switch" 
-                            {% if department.Dept_Status == 1 %}
+                            {% if employee.Emp_Status == True %}
                               checked onclick="return false"
                             {% endif %}>
                             <label for="switch">Toggle</label>
@@ -56,8 +61,8 @@
                       </td>
                         
                         <td class="text-center">
-                            <a href="department/manage?id={{department.Dept_Id }}"  ><i class="material-icons">edit</i></a>
-                            <a href="department/delete?id={{department.Dept_Id }}" 
+                            <a href="employee/manage?id={{employee.Emp_Id }}"  ><i class="material-icons">edit</i></a>
+                            <a href="employee/delete?id={{employee.Emp_Id }}" 
                             onclick="return confirm('Are you sure you want to delete?')"><i class="material-icons">delete</i></a>
                         </td>
                       </tr>
