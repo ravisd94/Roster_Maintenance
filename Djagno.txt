@@ -1,0 +1,24 @@
+Install virtual env:
+pip3 install virtualenv
+virtualenv env //Create folder
+.\env\Scripts\activate //navigate and run
+
+Install Django:
+pip install django
+
+create project:
+django-admin startproject Roster_Time_Proj
+
+Create Application
+python manage.py startapp Rostering_App
+
+Run the aplication:
+python manage.py runserver 127.0.0.5:8000
+
+Models Migrations:
+python manage.py makemigrations
+python manage.py migrate 
+
+DB Queries
+--To get all the tables name
+Select * from SQLite_master
