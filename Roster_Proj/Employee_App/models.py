@@ -69,7 +69,7 @@ class Emp_Master(models.Model):
     Contact_Number=models.IntegerField(blank=True)
     Joining_Date=models.DateField(blank=True)
     Desg_Id = models.ForeignKey(Designation_Master, on_delete=models.CASCADE)
-    Job_Role=models.ForeignKey(Role_Master, on_delete=models.CASCADE)
+    Role_Id=models.ForeignKey(Role_Master, on_delete=models.CASCADE)
     Emp_Sex=models.TextField(blank=True)
     Birth_Date=models.DateField(blank=True)
     Emp_Status=models.BooleanField(default=True)

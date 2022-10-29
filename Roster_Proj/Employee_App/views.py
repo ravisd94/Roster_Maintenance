@@ -341,22 +341,36 @@ def manage_emp(request):
     Desg_Active_List = Designation_Master.objects.filter(Desg_Status=True).all()
     Role_Active_List = Role_Master.objects.filter(Role_Status=True).all()
     id = ''
+    details=''
+    for key, value in data.items():
+            print('Key: %s' % (key) ) 
+            print('Value %s' % (value) )
     if 'id' in data:
         id = data['id']
-    if id == '':
-        card_header='Create New '
-    else:
-        employee = Emp_Master.objects.filter(Emp_Id=id).first()
+        if id == '':
+            card_header='Create New '
+        else:
+            employee = Emp_Master.objects.filter(Emp_Id=id).first()
+            print(employee.First_Name)
         card_header='Edit '
+
+    if 'details' in data:
+        details = data['details']
+        if details != '':
+            employee = Emp_Master.objects.filter(Emp_Id=details).first()
+            print(employee.Role_Id)
+            card_header='Details of Employee'
+ 
+    print('details: ' + details)
     context = {
         'employee' : employee,
         'card_header': card_header,
         'departments' : Dept_Active_List,
         'designations' : Desg_Active_List,
-        'roles': Role_Active_List
+        'roles': Role_Active_List,
+        'details' : details
     }
     return render(request, 'Employee/manage_emp.html',context)
-
 
 def save_emp(request):
     if request.method == 'POST':
@@ -468,7 +482,6 @@ def save_emp(request):
             isExist = Emp_Master.isExists(Email_ID)
             print(isExist)
 
-            ret = HttpResponse(json.dumps(resp), content_type="application/json")
             Emp_Id  = ''
             if 'Emp_Id' in data:
                 Emp_Id = data['Emp_Id']
@@ -491,7 +504,7 @@ def save_emp(request):
                         Contact_Number=Contact_Number,
                         Joining_Date=Joining_Date,
                         Desg_Id=Desg,
-                        Job_Role=Role,
+                        Role_Id=Role,
                         Emp_Sex=Emp_Sex,
                         Birth_Date=Birth_Date,
                         Emp_Status=True
@@ -512,14 +525,14 @@ def save_emp(request):
                     Contact_Number=Contact_Number,
                     Joining_Date=Joining_Date,
                     Desg_Id=Desg,
-                    Job_Role=Role,
+                    Role_Id=Role,
                     Emp_Sex=Emp_Sex,
                     Birth_Date=Birth_Date,
                     Emp_Status=Emp_Status,
                     Modified_Date= datetime.datetime.now() 
                     )
                 resp['status'] = 'success'
-                messages.success(request, "Employee id: "+str(id)+" updated successfully")  
+                messages.success(request, "Employee id: "+str(Emp_Id)+" updated successfully")  
                 print(str(resp['msg']))
                 return HttpResponse(json.dumps(resp), content_type="application/json")   
             
