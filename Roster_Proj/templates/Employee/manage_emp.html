@@ -50,6 +50,7 @@
         <label for="Emp_Status" class="form-label">Status</label>
         <div class="switchToggle">
           <input type="checkbox" class="form-control" name="Emp_Status" id="switch"
+  
           {% if employee.Emp_Status == True %}
             checked
             {% endif %}
@@ -258,7 +259,7 @@
       }
       else{
         $("#validation_box").attr('aria-hidden', 'true').addClass("alert-success show alert  alert-dismissible fade show");
-        window.location('{% url employee %}');
+        window.location.href = "{% url 'employee' %}";
       }
 
     }
