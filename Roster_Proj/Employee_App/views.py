@@ -41,16 +41,26 @@ def manage_dept(request):
     department = {}
     data =  request.GET
     id = ''
+    details=''
     if 'id' in data:
         id = data['id']
-    if id == '':
-        card_header='Create New '
-    else:
-        department = Dept_Master.objects.filter(Dept_Id=id).first()
-        card_header='Edit '
+        if id != '':
+            department = Dept_Master.objects.filter(Dept_Id=id).first()
+        card_header='Edit the Department'
+
+    if 'details' in data:
+        details = data['details']
+        if details != '':
+            department = Dept_Master.objects.filter(Dept_Id=details).first()
+            card_header='Details of Department: ' + department.Dept_Name
+    
+    if 'id' not in data and 'details' not in data:
+        card_header='Create New Department'
+
     context = {
         'department' : department,
-        'card_header': card_header
+        'card_header': card_header,
+        'details' : details
     }
     return render(request, 'Employee/Department/manage_department.html',context)
 
@@ -75,7 +85,8 @@ def save_department(request):
         print("------------------End All Key value Pairs-------------")
         Name = data['Dept_Name']
         Desc = data['Dept_description']
-
+        print(Name)
+        print(Desc)
         isExist = Dept_Master.isExists(Name)
         print(isExist)
 
@@ -85,7 +96,7 @@ def save_department(request):
                 Status=True
         else:
             Status=False
-        print("status: "+str(Status))
+        print("status: "+ str(Status))
         try:
             ret = HttpResponse(json.dumps(resp), content_type="application/json")
             id  = ''
@@ -107,7 +118,7 @@ def save_department(request):
                     # messages.error(request, "Department '"+Name+"' is already exist, please use other name")
                     return HttpResponse(json.dumps(resp), content_type="application/json")
                 
-                save_department = Dept_Master(Dept_Name=Name, Dept_description = Desc,Dept_Status = Status)
+                save_department = Dept_Master(Dept_Name=Name, Dept_description = Desc,Dept_Status = True)
                 save_department.save()
                 messages.success(request, "Department added successfully")   
                 resp['status'] = 'success'
@@ -116,7 +127,11 @@ def save_department(request):
                     
             else:
                 print("Now: "+str(datetime.datetime.now()))
-                Dept_Master.objects.filter(Dept_Id = id).update(Dept_Name = Name,Dept_Status=Status,Dept_description = Desc, Modified_Date= datetime.datetime.now() )
+                Dept_Master.objects.filter(Dept_Id = id).update(
+                    Dept_Name = Name,
+                    Dept_Status=Status,
+                    Dept_description = Desc, 
+                    Modified_Date = datetime.datetime.now()  )
                 resp['status'] = 'success'
                 messages.success(request, "Department id: "+str(id)+" updated successfully")  
                 print(str(resp['msg']))

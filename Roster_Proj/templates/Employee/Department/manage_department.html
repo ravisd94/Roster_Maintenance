@@ -1,157 +1,270 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Dashboard {% endblock %} 
+{% block title %} Tables Data {% endblock %} 
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} {% endblock body_class %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
 
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/static/assets_New/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/static/assets_New/css/adminlte.min.css">
+
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="/static/assets_New/plugins/toastr/toastr.min.css">
+
 {% endblock stylesheets %}
 
-{% block content %}
-<div class="container-fluid"  >
-  <div aria-hidden="true" id="validation_box" class="" role="alert">
-    <strong></strong> 
-  </div>
+{% block content %} 
 
-  {% for message  in messages %}
-  <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-    <strong>{{message}}</strong> 
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-{% endfor %}
-
-<form class="was-validated row g-3" id="department-form">
-  {% csrf_token %}
-  <div class="card">
-    <div class="card-header text-center">
-      <h5>{{card_header}} Employee</h5><hr>
-    </div>
-    <div class="card-body">
-  <div class="row g-3">
-    {% if  department.Dept_Id is  None    %}
-
-    <div class="col-md-4">
-      <label for="Dept_Name" class="form-label">Name</label>
-      <input type="text" class="form-control" placeholder="Enter Department Name" 
-        name="Dept_Name" required>
-      <div class="valid-feedback">Valid.</div>
-      <div class="invalid-feedback">Please Enter Department Name.</div>
-    </div>
-
-    <div class="col-md-2">
-      <label for="Dept_Status" class="form-label">Status</label>
-      <div class="switchToggle">
-        <input type="checkbox" class="form-control" onclick="return false" checked  name="Dept_Status" id="switch">
-        <label for="switch">Toggle</label>
-      </div>
-    </div>
-
-    <div class="col-md-6">
-      <label for="Dept_description" class="form-label">Description</label>
-      <textarea class="form-control"  name="Dept_description" 
-      placeholder="Department Description" ></textarea>
-    </div>
-  
-    {% else %}
-    <div class="col-md-2 mb-3">
-      <label for="Dept_Id" class="form-label">Department Id</label>
-      <input type="text" readonly  class="form-control" name="Dept_Id" 
-        value="{{department.Dept_Id}}" />
-    </div>
-
-    <div class="mb-3 col-md-4">
-      <label for="Dept_Name" class="form-label">Name</label>
-      <input type="text" class="form-control" placeholder="Enter Department Name" 
-      value="{{department.Dept_Name}}" name="Dept_Name" required>
-      <div class="valid-feedback">Valid.</div>
-      <div class="invalid-feedback">Please fill out this field.</div>
-    </div>
-
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        {% comment %} <div class="row mb-2">
+            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
+            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
+        </div> {% endcomment %}
+        <div class="row mb-1">
+          <div class="col-md-6">
+            <h1><b>{{card_header}} </b></h1>
+          </div>
+        </div>
+        {% if details == '' %}
+            <div  id="validation_box" style="display: none;"  class="col-md-12 alert ">
+              <h5></h5>
+            </div>
+        {% endif %}
+        
+      </div><!-- /.container-fluid -->
+    </section>
     
-    <div class="mb-3 col-md-2">
-      <label for="Dept_Status" class="form-label">Status</label>
-      <div class="switchToggle">
-        <input type="checkbox" class="form-control" name="Dept_Status" id="switch"
-          {% if department.Dept_Status == 1 %}
-          checked
-          {% endif %}>
-        <label for="switch">Toggle</label>
-      </div>
-    </div>
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- /.card -->
+            <div class="card">
+              <form id="department-form">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="row">
+                      {% if details != '' or request.GET.id is not None %}
+                      <div class="col-4">
+                        <div class="form-group">
+                            <label for="Dept_Id">Department Id</label>
+                            <input type="text" name="Dept_Id" class="form-control"
+                                value='{% if department.Dept_Id %}{{department.Dept_Id}}{% endif %}'
+                                readonly>
+                        </div>       
+                      </div>
+                      {% endif%}
+                      <div class="col-4">
+                            <div class="form-group">
+                                <label for="Dept_Name">Department Name</label>
+                                <input type="text" name="Dept_Name" class="form-control" id="Dept_Name" 
+                                    placeholder="Enter Department Name" value='{% if department.Dept_Name %}{{department.Dept_Name}}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>       
+                      </div>
 
-    <div class="mb-3 col-md-4">
-      <label for="Dept_description" class="form-label">Description</label>
-      <textarea rows="3" class="form-control" placeholder="Enter Department Description" 
-       name="Dept_description">{{department.Dept_description}}</textarea>
-      <div class="valid-feedback">Valid.</div>
-      <div class="invalid-feedback">Please fill out this field.</div>
-    </div>
+                      <div class="col-2">
+                            <div class="form-group">
+                                <label for="Dept_Status">Department Status</label>
+                                <div class="switchToggle">
+                                    <input type="checkbox" class="form-control" name="Dept_Status" id="switch"
+                                    
+                                    
+                                    {% if department.Dept_Status == True %}
+                                      checked
+                                      {% endif %}
+                                    {% if details != '' %} disabled {% endif%}>
+                                    <label for="switch">Toggle</label>
+                                </div>
+                            </div>
+                      </div>
+
+                      <div class="col-4">
+                            <div class="form-group">
+                                <label for="Dept_description">Department Description</label>
+                                <textarea  class="form-control" name="Dept_description" 
+                                  {% if details != '' %} readonly{%else%}  placeholder="Enter Department Description"  {% endif%}
+                                  >{% if department.Dept_description %}{{department.Dept_description}}{% endif %}</textarea>
+                            </div>
+                      </div>
+                    </div>
+
+                    {% if details != '' %}
+                      <div class="row">
+                        <div class="col-4 ">
+                            <div class="form-group">
+                                <label for="Created_By">Created By</label>
+                                <input type="text" name="Created_By" class="form-control"
+                                    value='{% if department.Created_By %}{{department.Created_By}}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>       
+                        </div>
+                        <div class="col-4 offset-2">
+                            <div class="form-group">
+                                <label for="Created_Date">Created Date</label>
+                                <input type="text" name="Created_Date" class="form-control"
+                                    value='{% if department.Created_Date %}{{department.Created_Date}}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>  
+                        </div>
+                        <div class="col-4 ">
+                            <div class="form-group">
+                                <label for="Modified_By">Last Modified By</label>
+                                <input type="text" name="Modified_By" class="form-control" 
+                                    value='{% if department.Modified_By %}{{department.Modified_By}}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>  
+                        </div>
+                        <div class="col-4 offset-2">
+                            <div class="form-group">
+                                <label for="Modified_Date">Last Modified Date</label>
+                                <input type="email" name="Modified_Date" class="form-control"
+                                    value='{% if department.Modified_Date %}{{department.Modified_Date}}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>  
+                        </div>
+                      </div>
+                    {% endif%}
+
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  {% if details != '' %}
+                    <a href='' class="btn btn-warning ">Back</a>
+                    <a href="manage?id={{department.Dept_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
+                  {% else %}
+                      <button type="submit" class="btn btn-success float-right ml-2">
+                        {% if request.GET.id is None %} Submit {% else %} Update {% endif%}
+                      </button>
+                      <a class="btn btn-danger float-right ml-2">Cancel</a>
+                  {% endif%}
+                  
+                </div>
+              </form>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
   </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <!-- jQuery -->
+  <script src="/static/assets_New/plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="/static/assets_New/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- jquery-validation -->
+  <script src="/static/assets_New/plugins/jquery-validation/jquery.validate.min.js"></script>
+  <script src="/static/assets_New/plugins/jquery-validation/additional-methods.min.js"></script>
   
-  <div class="row">
-    <div class="col-md-3">
-      <label for="Created_By" class="form-label">Created By</label>
-      <input type="text" readonly  class="form-control"
-        placeholder="Created By" name="Created_By"  value="{{department.Created_By}}">
-    </div>
-    <div class="col-md-3">
-      <label for="Created_Date" class="form-label">Created Date</label>
-      <input type="text"  class="form-control"  readonly
-        placeholder="Required Department Name" name="Created_Date"  value="{{department.Created_Date}}">
-    </div>
-    <div class="col-md-3">
-      <label for="Modified_By" class="form-label">Modified By</label>
-      <input type="text"  class="form-control"   readonly
-        placeholder="Required Department Name" name="Modified_By"  value="{{department.Modified_By}}">
-    </div>
-    <div class="col-md-3">
-      <label for="Modified_Date" class="form-label">Modified Date</label>
-      <input type="text"  class="form-control"  readonly
-        placeholder="Required Department Name" name="Modified_Date"  value="{{department.Modified_Date}}">
-    </div>
-  </div>
-    {% endif %}
+  <!-- SweetAlert2 -->
+  <script src="/static/assets_New/plugins/sweetalert2/sweetalert2.min.js"></script>
+  <!-- Toastr -->
+  <script src="/static/assets_New/plugins/toastr/toastr.min.js"></script>
+
+  <!-- AdminLTE App -->
+  <script src="/static/assets_New/js/adminlte.min.js"></script>
   
-    <div class="row g-3">
-      <div class="col-md-6 mb-3">
-        <button class="btn btn-secondary" type="reset" >Reset form</button>
-      </div>
-      <div class="col-md-6 mb-3">
-        <a class="btn btn-danger" type="Cancel" href="{% url 'department' %}" >Cancel</a>
-        <button class="btn btn-primary" type="submit" >Submit</button>
-      </div>
-    </div>
-  </div>
-</div>
+  {% comment %} Validations {% endcomment %}
+<script>
+  $(function () {
+    $('#department-form').validate({
+      rules: {
+        Dept_Name: {
+          required: true,
+        },
+      },
+      messages: {
+        Dept_Name: {
+          required: "Please enter a Department Name",
+        }
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
+  });
+</script>
 
-  </form>
-</div>
-
-
-
-{% endblock content %}   {% block javascripts %}
-<script type="text/javascript">
+<script>
   $(document).on("submit","#department-form",function(e){
     e.preventDefault();
   var dataString = $(this).serialize();
-  $("#validation_box").attr('aria-hidden', 'true');
+  $("#validation_box").css('display', 'block');
 
   $.ajax({
     type:'POST',
     url:  "{% url 'save_department' %}",
     data: dataString,
     success: function(data){
-      $('strong').html(data.msg);
+      $('h5').html('');
+      $('h5').prepend(data.msg).prepend("<i class='icon fas fa-ban'></i>");
       if(data.status == 'failed'){
-        $("#validation_box").attr('aria-hidden', 'false').addClass("alert-danger show alert  alert-dismissible fade show");
+        $("#validation_box").attr('aria-hidden', 'false').addClass("alert-danger alert-dismissible");
+
+        $(function() {
+          var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 10000
+          });
+          $(function() {
+            Toast.fire({
+              icon: 'error',
+              title: data.msg
+            })
+          });      
+        });
+
+
       }
       else{
-        $("#validation_box").attr('aria-hidden', 'true').addClass("alert-success show alert  alert-dismissible fade show");
-        window.location();
+        window.location.href = "{% url 'department' %}";
       }
 
     }
   })
   });
 </script>
+
+{% comment %} Ajax POST {% endcomment %}
+
+
+
+  
 {% endblock javascripts %}

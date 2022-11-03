@@ -1,0 +1,82 @@
+    <div class="sidebar" data-color="purple" data-background-color="white" data-image="/static/assets/img/sidebar-1.jpg">
+      <div class="logo">
+        <a target="_blank" rel="noopener noreferrer" 
+           href="https://appseed.us/admin-dashboards/django-dashboard-material" class="simple-text logo-normal">
+          Django Material
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+        {% comment %} {% if request.user.is_authenticated %} {% endcomment %}
+
+          <li class="nav-item {% if 'index' in segment %} active {% endif %}">
+            <a class="nav-link" href="{% url 'home' %}">
+              <i class="material-icons">dashboard</i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li data-toggle="collapse" data-target="#company" class="collapsed nav-item">
+            <a href="#" class="nav-link"><i class="fa fa-building fa-lg" ></i> 
+              <p>Company <span class="fa fa-chevron-down fa-md text-end"></span></p></a>
+          </li>  
+          <ul class="sub-menu collapse" style="list-style: none;" id="company">
+            <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+              <a class="nav-link" href="{% url 'department' %}">
+                <i class="fa fa-group fa-md"></i>
+                <p>Department Master</p>
+              </a>
+            </li>
+            <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+              <a class="nav-link" href="{% url 'designation' %}">
+                <i class="fa fa-briefcase fa-md"></i>
+                <p>Designation</p>
+              </a>
+            </li>
+            <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+              <a class="nav-link" href="{% url 'role' %}">
+                <i class="fa fa-briefcase fa-md"></i>
+                <p>Role</p>
+              </a>
+            </li>
+          </ul>
+          <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+            <a class="nav-link" href="{% url 'employee' %}">
+              <i class="material-icons">person</i>
+              <p>Employee Master</p>
+            </a>
+          </li>
+
+          <li data-toggle="collapse" data-target="#Attendance" class="collapsed nav-item">
+            <a href="#" class="nav-link"><i class="fa fa-calendar fa-lg" ></i> 
+              <p>Attendance <span class="fa fa-chevron-down fa-md text-end"></span></p></a>
+          </li>  
+          <ul class="sub-menu collapse" style="list-style: none;" id="Attendance">
+            <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+              <a class="nav-link" href="user">
+                <i class="fa fa-book fa-md"></i>
+                <p>Shift Master</p>
+              </a>
+            </li>
+            <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+              <a class="nav-link" href="user">
+                <i class="fa fa-calendar-o fa-md"></i>
+                <p>Holiday Master</p>
+              </a>
+            </li>
+          </ul>
+          
+          <li class="nav-item active">
+            {% comment %} <a class="nav-link" href="{% url 'logout' %}" > {% endcomment %}
+              <a class="nav-link">
+              <i class="material-icons">directions_run</i>
+              <p>Logout</p>
+            </a>
+          </li>
+
+        {% comment %} {% else %} {% endcomment %}    
+
+        {% comment %} {% endif %} {% endcomment %}
+        </ul>
+      </div>
+
+    </div>
