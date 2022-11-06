@@ -57,53 +57,46 @@
           <div class="col-12">
             <!-- /.card -->
             <div class="card">
-              <form id="department-form">
+              <form id="shift-form">
                 {% csrf_token %}
                 <div class="card-body">
                     <div class="row">
                       {% if details != '' or request.GET.id is not None %}
                       <div class="col-md-4 col-sm-4">
                         <div class="form-group">
-                            <label for="Dept_Id">Department Id</label>
-                            <input type="text" name="Dept_Id" class="form-control"
-                                value='{% if department.Dept_Id %}{{department.Dept_Id}}{% endif %}'
+                            <label for="Shift_Id">Shift Id</label>
+                            <input type="text" name="Shift_Id" class="form-control"
+                                value='{% if shift.Shift_Id %}{{shift.Shift_Id}}{% endif %}'
                                 readonly>
                         </div>       
                       </div>
                       {% endif%}
                       <div class="col-md-4 col-sm-4">
                             <div class="form-group">
-                                <label for="Dept_Name">Department Name</label>
-                                <input type="text" name="Dept_Name" class="form-control" id="Dept_Name" 
-                                    placeholder="Enter Department Name" value='{% if department.Dept_Name %}{{department.Dept_Name}}{% endif %}'
+                                <label for="Shift_Name">Shift Name</label>
+                                <input type="text" name="Shift_Name" class="form-control"
+                                    value='{% if shift.Shift_Name %}{{shift.Shift_Name}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>       
                       </div>
 
-                      <div class="col-2">
+                      <div class="col-md-2 col-sm-4">
                             <div class="form-group">
-                                <label for="Dept_Status">Department Status</label>
-                                <div class="switchToggle">
-                                    <input type="checkbox" class="form-control" name="Dept_Status" id="switch"
-                                    
-                                    
-                                    {% if department.Dept_Status == True %}
-                                      checked
-                                      {% endif %}
-                                    {% if details != '' %} disabled {% endif%}>
-                                    <label for="switch">Toggle</label>
-                                </div>
-                            </div>
-                      </div>
+                                <label for="Shift_Start_Time">Start Time</label>
+                                <input type="time" name="Shift_Start_Time" class="form-control datetimepicker-input"
+                                    value='{% if shift.Shift_Start_Time %}{{shift.Shift_Start_Time| time:"H:i"}}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>       
+                        </div>
 
-                      <div class="col-4">
+                        <div class="col-md-2 col-sm-4">
                             <div class="form-group">
-                                <label for="Dept_description">Department Description</label>
-                                <textarea  class="form-control" name="Dept_description" 
-                                  {% if details != '' %} readonly{%else%}  placeholder="Enter Department Description"  {% endif%}
-                                  >{% if department.Dept_description %}{{department.Dept_description}}{% endif %}</textarea>
-                            </div>
-                      </div>
+                                <label for="Shift_End_Time">End Time</label>
+                                <input type="time" name="Shift_End_Time" class="form-control datetimepicker-input"
+                                    value='{% if shift.Shift_End_Time %}{{shift.Shift_End_Time| time:"H:i"  }}{% endif %}'
+                                    {% if details != '' %} readonly  {% endif%}>
+                            </div>       
+                        </div>
                     </div>
 
                     {% if details != '' %}
@@ -112,7 +105,7 @@
                             <div class="form-group">
                                 <label for="Created_By">Created By</label>
                                 <input type="text" name="Created_By" class="form-control"
-                                    value='{% if department.Created_By %}{{department.Created_By}}{% endif %}'
+                                    value='{% if shift.Created_By %}{{shift.Created_By}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>       
                         </div>
@@ -120,7 +113,7 @@
                             <div class="form-group">
                                 <label for="Created_Date">Created Date</label>
                                 <input type="text" name="Created_Date" class="form-control"
-                                    value='{% if department.Created_Date %}{{department.Created_Date}}{% endif %}'
+                                    value='{% if shift.Created_Date %}{{shift.Created_Date}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>  
                         </div>
@@ -128,7 +121,7 @@
                             <div class="form-group">
                                 <label for="Modified_By">Last Modified By</label>
                                 <input type="text" name="Modified_By" class="form-control" 
-                                    value='{% if department.Modified_By %}{{department.Modified_By}}{% endif %}'
+                                    value='{% if shift.Modified_By %}{{shift.Modified_By}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>  
                         </div>
@@ -136,7 +129,7 @@
                             <div class="form-group">
                                 <label for="Modified_Date">Last Modified Date</label>
                                 <input type="email" name="Modified_Date" class="form-control"
-                                    value='{% if department.Modified_Date %}{{department.Modified_Date}}{% endif %}'
+                                    value='{% if shift.Modified_Date %}{{shift.Modified_Date}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>  
                         </div>
@@ -148,7 +141,7 @@
                 <div class="card-footer">
                   {% if details != '' %}
                     <a href='' class="btn btn-warning ">Back</a>
-                    <a href="manage?id={{department.Dept_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
+                    <a href="manage?id={{shift.Shift_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
                   {% else %}
                       <button type="submit" class="btn btn-success float-right ml-2">
                         {% if request.GET.id is None %} Submit {% else %} Update {% endif%}
@@ -194,15 +187,15 @@
   {% comment %} Validations {% endcomment %}
 <script>
   $(function () {
-    $('#department-form').validate({
+    $('#shift-form').validate({
       rules: {
-        Dept_Name: {
+        Shift_Name: {
           required: true,
         },
       },
       messages: {
-        Dept_Name: {
-          required: "Please enter a Department Name",
+        Shift_Name: {
+          required: "Please enter a Shift Name",
         }
       },
       errorElement: 'span',
@@ -221,14 +214,14 @@
 </script>
 
 <script>
-  $(document).on("submit","#department-form",function(e){
+  $(document).on("submit","#shift-form",function(e){
     e.preventDefault();
   var dataString = $(this).serialize();
   $("#validation_box").css('display', 'block');
 
   $.ajax({
     type:'POST',
-    url:  "{% url 'save_department' %}",
+    url:  "{% url 'save_shift' %}",
     data: dataString,
     success: function(data){
       $('h5').html('');
@@ -254,7 +247,7 @@
 
       }
       else{
-        window.location.href = "{% url 'department' %}";
+        window.location.href = "{% url 'shift' %}";
       }
 
     }

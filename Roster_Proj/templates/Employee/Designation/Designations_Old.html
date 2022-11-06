@@ -1,0 +1,76 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container-fluid">
+{% for message  in messages %}
+  <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+    <strong>{{message}}</strong> 
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+    <div class="row  align-items-center">
+        <div class="col mx-auto ">
+            <h4 class="">Designation</h4>
+		</div>
+        <div class="col mx-auto d-flex justify-content-end">
+            <a class="btn btn-primary" href="{% url 'designation/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
+        </div>
+    </div>
+    
+<hr>
+    <div class="row">
+        
+            <div class="table-responsive">
+                <table class="table table-hover table-sm table-striped ">
+                    <thead class="fw-bold text-center">
+                      <tr>
+                        <th class="fw-bold" scope="col">ID</th>
+                        <th class="fw-bold" scope="col">Name</th>
+                        <th class="fw-bold" scope="col">Description</th>
+                        <th class="fw-bold" scope="col">Status</th>
+                        <th class="text-center py-1 fw-bold">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="text-center">
+                        {% for designation in designations %}
+                        <th class="text-center" scope="row">{{ designation.Desg_Id }}</th>
+                        <td class="text-center">{{ designation.Desg_Name }}</td>
+                        <td class="text-center">{{ designation.Desg_description }}</td>
+                        <td class="d-flex justify-content-center" >
+                          <div class="switchToggle">
+                            <input type="checkbox" class="form-control"id="switch" 
+                            {% if designation.Desg_Status == 1 %}
+                              checked onclick="return false"
+                            {% endif %}>
+                            <label for="switch">Toggle</label>
+                          </div>
+                      </td>
+                        
+                        <td class="text-center">
+                            <a href="designation/manage?id={{designation.Desg_Id }}"  ><i class="material-icons">edit</i></a>
+                            <a href="designation/delete?id={{designation.Desg_Id }}" 
+                            onclick="return confirm('Are you sure you want to delete?')"><i class="material-icons">delete</i></a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+{% endblock content %} {% block ScriptBlock %}
+<style>
+  alert('{{ msg }}');
+</style>
+{% endblock ScriptBlock %}

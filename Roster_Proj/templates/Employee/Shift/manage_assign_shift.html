@@ -67,34 +67,6 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          {% if request.GET.id is not None or  details != '' %}
-            <div class="col-md-3">
-                    <!-- Widget: user widget style 1 -->
-                    <div class="card card-widget widget-user">
-                      <!-- Add the bg color to the header using any of the bg-* classes -->
-                      <div class="widget-user-header text-white"
-                           style="background: url('/static/assets_New/img/photo1.png') center center;">
-                        <h3 class="widget-user-username text-right">{{employee.First_Name}} {{employee.Middle_Name}} {{employee.Last_Name}}</h3>
-                        <h5 class="widget-user-desc text-right">{{employee.Desg_Id}}</h5>
-                      </div>
-                      <div class="widget-user-image">
-                        <img class="img-circle" src="/static/assets_New/img/user3-128x128.jpg" alt="User Avatar">
-                      </div>
-                      <div class="card-footer">
-                        <div class="row">
-                            <strong><i class="fas fa-address-card mr-1"></i>
-                               Emp Id:  {% if employee.Emp_Id %}{{employee.Emp_Id}}{% endif %}</strong><br>
-                            <hr>
-
-                          <!-- /.col -->
-                        </div>
-                        <!-- /.row -->
-                      </div>
-                    </div>
-                    <!-- /.widget-user -->
-                  </div>
-            {% endif%}
-
           <div {% if request.GET.id is not None or  details != '' %} class="col-9" {% else %} class="col-12"  {% endif%}>
             <!-- /.card -->
             <div class="card">
@@ -102,190 +74,85 @@
                 {% csrf_token %}
                 <div class="card-body">
                   <div class="row">
-                    
-                    <div hidden>
+
+                    {% if details != '' or request.GET.id is not None %}
+                    <div class="col-md-4 col-sm-4">
                       <div class="form-group">
-                        <label for="Emp_Id">First Name</label>
-                        <input type="text" name="Emp_Id" class="form-control" 
-                          value='{% if employee.Emp_Id %}{{employee.Emp_Id}}{% endif %}'
-                          {% if details != '' %} readonly  {% endif%}>
+                          <label for="Emp_Shift_Id">Id</label>
+                          <input type="text" name="Emp_Shift_Id" class="form-control"
+                              value='{% if assign_shift.Emp_Shift_Id %}{{assign_shift.Emp_Shift_Id}}{% endif %}'
+                              readonly>
                       </div>       
                     </div>
+                    {% endif%}
 
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="First_Name">First Name</label>
-                                <input type="text" name="First_Name" class="form-control" id="First_Name" 
-                                    placeholder="Enter First Name" value='{% if employee.First_Name %}{{employee.First_Name}}{% endif %}'
-                                    {% if details != '' %} readonly  {% endif%}>
-                            </div>       
-                        </div>
-
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="Middle_Name">Middle Name</label>
-                                <input type="text" name="Middle_Name" class="form-control"placeholder="Enter Middle Name" 
-                                  value='{% if employee.Middle_Name %}{{employee.Middle_Name}}{% endif %}'
-                                  {% if details != '' %} readonly  {% endif%}>
-                            </div>       
-                        </div>
-
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="Last_Name">Last Name</label>
-                                <input type="text" name="Last_Name"  class="form-control"placeholder="Enter Last Name" 
-                                  value='{% if employee.Last_Name %}{{employee.Last_Name}}{% endif %}'
-                                  {% if details != '' %} readonly  {% endif%}>
-                            </div>       
-                        </div>
-
-                        <div class="col-7">
-                          <div class="form-group">
-                            <label for="Email_ID">Email address</label>
-                            <input type="email" name="Email_ID" class="form-control"  placeholder="Enter email"
-                            value='{% if employee.Email_ID %}{{employee.Email_ID}}{% endif %}'
-                            {% if details != '' %} readonly {% endif%}>
-                          </div>
-                        </div>
-
-                        <div class="col-5">
-                          <div class="form-group clearfix">
-                              <label for="Last_Name">Gender</label><br>
-                              <div class="icheck-primary d-inline">
-                                <input value="Male" type="radio" id="radioPrimary1" name="Emp_Sex" 
-                                {% if employee.Emp_Sex and employee.Emp_Sex == "Male" %}checked {%endif%}
-                                {% if details != '' %} disabled {% endif%}>
-                                <label for="radioPrimary1">
-                                  Male 
-                                </label>
-                              </div>
-                              <div class="icheck-primary d-inline">
-                                <input value="Female" type="radio" id="radioPrimary2" name="Emp_Sex"
-                                {% if employee.Emp_Sex and employee.Emp_Sex == "Female" %}checked {%endif%}
-                                {% if details != '' %} disabled {% endif%}>
-                                <label for="radioPrimary2">
-                                  Female
-                                </label>
-                              </div>
-                              <div class="icheck-primary d-inline">
-                                <input value="Other" type="radio" id="radioPrimary3" name="Emp_Sex"
-                                {% if employee.Emp_Sex and employee.Emp_Sex == "Other" %}checked {%endif%}
-                                {% if details != '' %} disabled {% endif%}>
-                                <label for="radioPrimary3">
-                                  Other
-                                </label>
-                              </div>
-                          </div>
+                    <div class="col-4">
+                      <div class="form-group">
+                        <label for="Emp_Id">Employee</label>
+                        <select name="Emp_Id"  class="form-control select2bs4" style="width: 100%;"
+                            {% if details != '' %} disabled {% endif%} >
+                            {% if not assign_shift.Emp_Id %}
+                            <option value="0" disabled selected>Please Select Employee</option>
+                            {% else %}
+                            <option value="0" disabled>Please Select Employee</option>
+                            {% endif %}
+                            {% for employee in employees %}
+                                {% if assign_shift.Emp_Id and assign_shift.Emp_Id == employee.Emp_Id %}
+                                <option value="{{ employee.Emp_Id }}" selected>{{ employee.Email_ID }}</option>
+                                {% else %}
+                                <option value="{{ employee.Emp_Id }}">{{ employee.Email_ID }}</option>
+                                {% endif %}
+                            {% endfor %}
+                    </select>
                       </div>
+                    </div>
 
-                        <div class="col-4">
-                          <!-- phone mask -->
-                          <div class="form-group">
-                            <label>Contact Number</label>
-                            <div class="input-group">
-                              <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                              </div>
-                              <input type="text" name="Contact_Number" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask
-                                value='{% if employee.Contact_Number %}{{employee.Contact_Number}}{% endif %}'
-                                {% if details != '' %} disabled {% endif%}>
-                            </div>
-                            <!-- /.input group -->
-                          </div>
-                          <!-- /.form group -->
-                        </div>
+                    <div class="col-5">
+                      <div class="form-group">
+                        <label for="Shift_Id">Shift</label>
+                        <select name="Shift_Id" class="form-control select2bs4" style="width: 100%;"
+                            {% if details != '' %} disabled {% endif%} >
+                            {% if not assign_shift.Shift_Id %}
+                            <option value="0" disabled selected>Please Select Shift</option>
+                            {% else %}
+                            <option value="0" disabled>Please Select Shift</option>
+                            {% endif %}
+                            {% for shift in shifts %}
+                                {% if assign_shift.Shift_Id and assign_shift.Shift_Id == shift.Emp_Id %}
+                                <option value="{{ shift.Shift_Id }}" selected>
+                                    {{ shift.Shift_Name }} - {{shift.Shift_Start_Time| time:"H:i"}} : {{shift.Shift_End_Time| time:"H:i"}}
+                                </option>
+                                {% else %}
+                                <option value="{{ shift.Shift_Id }}">
+                                    {{ shift.Shift_Name }} - {{shift.Shift_Start_Time| time:"H:i"}} : {{shift.Shift_End_Time| time:"H:i"}}
+                                </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                      </div>
+                    </div>
 
-                      <div class="col-4">
+                    <div class="col-4">
                         <div class="form-group">
-                            <label>Birth Date</label>
+                            <label>Start Date</label>
                               <div class="input-group date" id="reservationdate">
-                                <input type="date" class="form-control datetimepicker-input" name="Birth_Date" 
-                                value="{% if employee.Birth_Date %}{{ employee.Birth_Date|date:'Y-m-d' }}{% endif %}"      
+                                <input type="date" class="form-control datetimepicker-input" name="Start_Date" 
+                                value="{% if assign_shift.Start_Date %}{{ assign_shift.Start_Date|date:'Y-m-d' }}{% endif %}"      
                                   {% if details != '' %} disabled {% endif%} >
                               </div>
                             </div>
                         </div>
-                        
-                        <div class="col-4">
-                          <div class="form-group">
-                              <label>Joining Date</label>
-                                <div class="input-group date" id="reservationdate1" data-target-input="nearest">
-                                  <input type="date" class="form-control datetimepicker-input" name="Joining_Date"   
-                                  value="{% if employee.Joining_Date %}{{ employee.Joining_Date|date:'Y-m-d'}}{% endif %}" 
-                                    {% if details != '' %} disabled {% endif%} >
-                                    {% comment %} <input type="text" name="Joining_Date" class="form-control datetimepicker-input" data-target="#reservationdate1" 
-                                    data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask
-                                    value="{% if employee.Joining_Date %}{{ employee.Joining_Date|date:'m d Y' }}{% endif %}"
-                                    {% if details != '' %} disabled {% endif%}>
-                                    <div class="input-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar" ></i></div>
-                                    </div> {% endcomment %}
-                                </div>
-                              </div>
-                          </div>
 
-                          <div class="col-4">
-                            <div class="form-group">
-                              <label for="Dept_Id">Department</label>
-                              <select name="Dept_Id"  class="form-control select2bs4" style="width: 100%;"
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>End Date</label>
+                              <div class="input-group date" id="reservationdate">
+                                <input type="date" class="form-control datetimepicker-input" name="End_Date" 
+                                value="{% if assign_shift.End_Date %}{{ assign_shift.End_Date|date:'Y-m-d' }}{% endif %}"      
                                   {% if details != '' %} disabled {% endif%} >
-                                  {% if not employee.Dept_Id %}
-                                  <option value="0" disabled selected>Please Select Department</option>
-                                  {% else %}
-                                  <option value="0" disabled>Please Select Department</option>
-                                  {% endif %}
-                                  {% for department in departments %}
-                                      {% if employee.Dept_Id and employee.Dept_Id == department.Dept_Id %}
-                                      <option value="{{ department.Dept_Id }}" selected>{{ department.Dept_Name }}</option>
-                                      {% else %}
-                                      <option value="{{ department.Dept_Id }}">{{ department.Dept_Name }}</option>
-                                      {% endif %}
-                                  {% endfor %}
-                              </select>
+                              </div>
                             </div>
-                          </div>
-
-                          <div class="col-4">
-                            <div class="form-group">
-                              <label for="Desg_Id">Designation</label>
-                              <select name="Desg_Id" class="form-control select2bs4" style="width: 100%;"
-                                {% if details != '' %} disabled {% endif%}>
-                                {% if not employee.Desg_Id %}
-                                <option value="0" disabled selected>Please Select Designation</option>
-                                {% else %}
-                                <option value="0" disabled>Please Select Designation</option>
-                                {% endif %}
-                                {% for designation in designations %}
-                                    {% if employee.Desg_Id and employee.Desg_Id == designation.Desg_Id %}
-                                    <option value="{{ designation.Desg_Id }}" selected>{{ designation.Desg_Name }}</option>
-                                    {% else %}
-                                    <option value="{{ designation.Desg_Id }}">{{ designation.Desg_Name }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                              </select>
-                            </div>
-                          </div>
-
-                          <div class="col-4">
-                            <div class="form-group">
-                              <label  for="Role_Id">Designation</label>
-                              <select name="Role_Id" class="form-control select2bs4" style="width: 100%;"
-                                {% if details != '' %} disabled {% endif%}>
-                                {% if not employee.Role_Id %}
-                                <option value="0" disabled selected>Please Select Role</option>
-                                {% else %}
-                                <option value="0" disabled>Please Select Role</option>
-                                {% endif %}
-                                {% for role in roles %}
-                                    {% if employee.Role_Id and employee.Role_Id == role.Role_Id %}
-                                    <option value="{{ role.Role_Id }}" selected>{{ role.Role_Name }}</option>
-                                    {% else %}
-                                    <option value="{{ role.Role_Id }}">{{ role.Role_Name }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                              </select>
-                            </div>
-                          </div>
+                        </div>
 
 
                     </div>
@@ -512,7 +379,7 @@
 
   $.ajax({
     type:'POST',
-    url:  "{% url 'save_emp' %}",
+    url:  "{% url 'save_assign_shift' %}",
     data: dataString,
     success: function(data){
       $('h5').html('');

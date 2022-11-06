@@ -16,20 +16,48 @@ urlpatterns = [
     path('designation', views.designation, name="designation"),
     path('designation/manage', views.manage_desg, name="designation/manage"),
     path('designation/delete', views.delete_desg, name="designation/delete"),
-    path('designation/save_designation', views.save_designation),
+    path('designation/save_designation', views.save_designation,name="save_designation"),
     # # End Designation Urls
 
     # # Role Urls
     path('role', views.role, name="role"),
     path('role/manage', views.manage_role, name="role/manage"),
     path('role/delete', views.delete_role, name="role/delete"),
-    path('role/save_role', views.save_role),
+    path('role/save_role', views.save_role,name="save_role"),
     # # End Role Urls
 
-    # # Role Urls
+    # # Project Urls
+    path('project', views.project, name="project"),
+    path('project/manage', views.manage_project, name="project/manage"),
+    path('project/delete', views.delete_project, name="project/delete"),
+    path('project/save_project', views.save_project,name="save_project"),
+    # # End Project Urls
+
+    # # Employee Urls
     path('employee', views.employee, name="employee"),
     path('employee/manage', views.manage_emp, name="employee/manage"),
     path('employee/delete', views.delete_emp, name="employee/delete"),
     path('employee/save_emp', views.save_emp,name="save_emp"),
-    # # End Role Urls
+    # # End Employee Urls
+
+    # # Shift Urls
+    # Shift Management
+    path('shift', views.shift, name="shift"),
+    path('shift/manage', views.manage_shift, name="shift/manage"),
+    path('shift/delete', views.delete_shift, name="shift/delete"),
+    path('shift/save_shift', views.save_shift,name="save_shift"),
+    # End Shift Management
+    
+    # Shift Assignment
+    path('shift/assign', views.assign_shift, name="assign_shift"),
+    path('shift/assign/manage', views.manage_assign_shift, name="shift/assign/manage"),
+    path('shift/assign/delete', views.delete_assign_shift, name="shift/assign/delete"),
+    path('shift/assign/save_assign_shift', views.save_assign_shift, name="save_assign_shift"),
+    # End Shift Assignment
+
+    # Shift Calender
+    path('shift/calender', views.shift_calender, name="shift_calender"),
+    # End Shift Calender
+    # # End Shift Urls
+
 ]

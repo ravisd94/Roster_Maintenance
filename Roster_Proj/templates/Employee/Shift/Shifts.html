@@ -33,11 +33,10 @@
         </div>
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1><b>Designation</b></h1>
+            <h1><b>Shift</b></h1>
           </div>
           <div class="col-sm-6">
-            <a href="{% url 'designation/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Designation</a>
-            {% comment %} <button class=" float-md-right">Add New Designation</button> {% endcomment %}
+            <a href="{% url 'shift/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Shift</a>
           </div>
         </div>
         {% for message  in messages %}
@@ -69,27 +68,21 @@
                   <tr>
                     <th>Id</th>
                     <th>Name</th>
-                    <th>Description</th>
-                    <th>Status</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
                     <th>Action</th>
                   </tr>
                   </thead>
                   <tbody>
                     <tr>
-                        {% for designation in designations %}
-                        <th>{{ designation.Desg_Id }}</th>
-                        <td>{{ designation.Desg_Name }}</td>
-                        <td>{{ designation.Desg_description }}</td>
+                        {% for shift in shifts %}
+                        <th>{{ shift.Shift_Id }}</th>
+                        <td>{{ shift.Shift_Name }}</td>
+                        <td>{{ shift.Shift_Start_Time }}</td>
+                        <td>{{ shift.Shift_End_Time }}</td>
                         <td>
-                            {% if designation.Desg_Status == True %}
-                            <span class="badge badge-success">Active</span>
-                            {% else %}
-                            <span class="badge badge-danger">Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="designation/manage?details={{designation.Desg_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
-                            <a href="designation/manage?id={{designation.Desg_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
+                            <a href="shift/manage?details={{shift.Shift_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
+                            <a href="shift/manage?id={{shift.Shift_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
                             <a href="/"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
                         </td>
                     </tr>

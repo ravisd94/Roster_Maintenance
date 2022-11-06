@@ -1,0 +1,77 @@
+if request.method == 'POST':
+data =  request.POST
+Status=''
+resp = {'status':'failed', 'msg': ''}
+print("------------------All Key value Pairs-------------")
+for key, value in data.items():
+    print('Key: %s' % (key) ) 
+    print('Value %s' % (value) )
+print("------------------End All Key value Pairs-------------")
+Name = data['Role_Name']
+Desc = data['Role_description']
+print(Name)
+print(Desc)
+isExist = Role_Master.isExists(Name)
+print(isExist)
+
+if 'Role_Status' in data:
+    Status = data['Role_Status']
+    if Status == 'on':
+        Status=True
+else:
+    Status=False
+print("status: "+ str(Status))
+try:
+    ret = HttpResponse(json.dumps(resp), content_type="application/json")
+    id  = ''
+    if 'Role_Id' in data:
+        id = data['Role_Id']
+    print('id:'+id)
+    # print('test: ' not isExist)
+    if id == '':
+        if Name is None:
+            resp['status'] = 'failed'
+            resp['msg']= "Name is mandatory, please add Name"
+            print(str(resp['msg']))
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+        
+        if isExist == True:
+            resp['status'] = 'failed'
+            resp['msg']="Role '"+Name+"' is already exist, please use other name"
+            print(str(resp['msg']))
+            # messages.error(request, "Role '"+Name+"' is already exist, please use other name")
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+        
+        save_role = Role_Master(Role_Name=Name, Role_description = Desc,Role_Status = True)
+        save_role.save()
+        messages.success(request, "Role added successfully")   
+        resp['status'] = 'success'
+        return HttpResponse(json.dumps(resp), content_type="application/json")   
+        # return HttpResponseRedirect('/role')  
+            
+    else:
+        print("Now: "+str(datetime.datetime.now()))
+        Role_Master.objects.filter(Role_Id = id).update(
+            Role_Name = Name,
+            Role_Status=Status,
+            Role_description = Desc, 
+            Modified_Date = datetime.datetime.now()  )
+        resp['status'] = 'success'
+        messages.success(request, "Role id: "+str(id)+" updated successfully")  
+        print(str(resp['msg']))
+        # return HttpResponseRedirect('/role')
+        return HttpResponse(json.dumps(resp), content_type="application/json")   
+        # return role(request)
+    
+except Exception as e:
+    resp['status'] = 'failed'
+    resp['msg']="Somehing went wrong!, please contact to system administrator..." + str(type(e))
+    print(str(resp['msg']))
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+print('final')
+return HttpResponseRedirect("/role")
+# return role()
+# return render(request,'Employee/Role/Roles.html',{'msg':msg})
+# return HttpResponse(json.dumps(resp), content_type="application/json")
+else:
+return HttpResponse("<h1>404 - Page not found...")

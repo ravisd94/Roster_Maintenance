@@ -1,83 +1,159 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Dashboard {% endblock %} 
+{% block title %} Tables Data {% endblock %} 
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} {% endblock body_class %} 
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
 
-{% block content %}
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/static/assets_New/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/static/assets_New/css/adminlte.min.css">
 
-<div class="container-fluid">
-{% for message  in messages %}
-  <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-    <strong>{{message}}</strong> 
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-{% endfor %}
+{% endblock stylesheets %}
 
-    <div class="row  align-items-center">
-        <div class="col mx-auto ">
-            <h4 class="">Employee</h4>
-		</div>
-        <div class="col mx-auto d-flex justify-content-end">
-            <a class="btn btn-primary" href="{% url 'employee/manage' %}" id="create_new"><i class="material-icons mdc-button__icon">add</i><span> Add New</span></a>
+{% block content %} 
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
+            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
         </div>
-    </div>
-    
-<hr>
-    <div class="row">
-        
-            <div class="table-responsive">
-                <table class="table table-hover table-sm table-striped ">
-                    <thead class="fw-bold text-center">
-                      <tr>
-                        <th class="fw-bold" scope="col">ID</th>
-                        <th class="fw-bold" scope="col">Full Name</th>
-                        <th class="fw-bold" scope="col">Email</th>
-                        <th class="fw-bold" scope="col">Department</th>
-                        <th class="fw-bold" scope="col">Joining Date</th>
-                        <th class="fw-bold" scope="col">Gender</th>
-                        <th class="fw-bold" scope="col">Status</th>
-                        <th class="text-center py-1 fw-bold">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr class="text-center">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1><b>Employee</b></h1>
+          </div>
+          <div class="col-sm-6">
+            <a href="{% url 'employee/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Employee</a>
+          </div>
+        </div>
+        {% for message  in messages %}
+          {% comment %} <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div> {% endcomment %}
+          <div class="alert {{ message.tags }} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-check"></i> {{message}}</h5>
+          </div>
+        {% endfor %}
+
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- /.card -->
+            <div class="card">
+
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-hover">
+                  <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
                         {% for employee in employees %}
-                        <th class="text-center" scope="row"><a href='employee/manage?details={{employee.Emp_Id }}'>
-                          {{ employee.Emp_Id }}</a></th>
-                        <td class="text-center">{{ employee.First_Name }}  {{ employee.Middle_Name }} {{ employee.Last_Name }}</td>
-                        <td class="text-center">{{ employee.Email_ID }}</td>
-                        <th class="text-center" scope="row">{{ employee.Dept_Id }}</th>
-                        <th class="text-center" scope="row">{{ employee.Joining_Date }}</th>
-                        <th class="text-center" scope="row">{{ employee.Emp_Sex }}</th>
-                        <td class="d-flex justify-content-center" >
-                          <div class="switchToggle">
-                            <input type="checkbox" class="form-control"id="switch" 
+                        <th>{{ employee.Emp_Id }}</th>
+                        <td>{{ employee.First_Name }} {{ employee.Middle_Name }} {{ employee.Last_Name }}</td>
+                        <td>{{ employee.Email_ID }}</td>
+                        <td>
                             {% if employee.Emp_Status == True %}
-                              checked onclick="return false"
-                            {% endif %}>
-                            <label for="switch">Toggle</label>
-                          </div>
-                      </td>
-                        
-                        <td class="text-center">
-                            <a href="employee/manage?id={{employee.Emp_Id }}"  ><i class="material-icons">edit</i></a>
-                            <a href="employee/delete?id={{employee.Emp_Id }}" 
-                            onclick="return confirm('Are you sure you want to delete?')"><i class="material-icons">delete</i></a>
+                            <span class="badge badge-success">Active</span>
+                            {% else %}
+                            <span class="badge badge-danger">Inactive</span>
+                            {% endif %}
                         </td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
+                        <td>
+                            <a href="employee/manage?details={{employee.Emp_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
+                            <a href="employee/manage?id={{employee.Emp_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
+                            <a href="employee/delete?id={{employee.Emp_Id }}" onclick="return confirm('Are you sure you want to delete?')">
+                              <i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
+                        </td>
+                    </tr>
+                        {% endfor %}
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>Rendering engine</th>
+                    <th>Rendering engine</th>
+                    <th>Browser</th>
+                    <th>Platform(s)</th>
+                    <th>Engine version</th>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
             </div>
-        <!-- Modal -->
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
 
-    </div>
-</div>
+{% endblock content %}
 
-{% endblock content %} {% block ScriptBlock %}
-<style>
-  alert('{{ msg }}');
-</style>
-{% endblock ScriptBlock %}
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <!-- jQuery -->
+  <script src="/static/assets_New/plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="/static/assets_New/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables -->
+  <script src="/static/assets_New/plugins/datatables/jquery.dataTables.min.js"></script>
+  <script src="/static/assets_New/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+  <script src="/static/assets_New/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+  <script src="/static/assets_New/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="/static/assets_New/js/adminlte.min.js"></script>
+  <!-- AdminLTE for demo purposes -->
+  <script src="/static/assets_New/js/demo.js"></script>
+  <!-- page script -->
+  <script>
+    $(function () {
+      $("#example1").DataTable({
+        "responsive": true,
+        "autoWidth": false,
+      });
+      $('#example2').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+      });
+    });
+  </script>
+
+{% endblock javascripts %}

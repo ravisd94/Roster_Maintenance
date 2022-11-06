@@ -1,0 +1,269 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container-fluid"  >
+<div class="row">
+  <div aria-hidden="true" id="validation_box" class="col-md-10" role="alert">
+    <strong></strong> 
+  </div>
+{% if details != '' %}
+  <div class="col-md-2">
+    <a  class="btn btn-primary" href="manage?id={{employee.Emp_Id }}">Edit</a>
+  </div>
+{% endif%}
+</div>
+
+<form class="was-validated" id="employee-form">
+  {% csrf_token %}
+  <div class="card">
+    <div class="card-header text-center">
+      <h5>{{card_header}} Employee</h5><hr>
+    </div>
+    <div class="card-body">
+  <div class="row g-3">
+
+    <div class="col-md-2">
+      <label for="Emp_Id" class="form-label">Emp Id</label>
+      <input type="text" class="form-control" name="Emp_Id" 
+      value='{% if employee.Emp_Id %}{{employee.Emp_Id}}{% endif %}' readonly>
+      <div class="valid-feedback">Valid.</div>
+      <div class="invalid-feedback">Please Enter Email Id.</div>
+    </div>
+
+    <div class="col-md-4">
+        <label for="Email_ID" class="form-label">Email Id</label>
+        <input type="Email" class="form-control" placeholder="Enter Email Id" 
+          name="Email_ID" value='{% if employee.Email_ID %}{{employee.Email_ID}}{% endif %}' required
+          {% if details != '' %} disabled {% endif%}>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please Enter Email Id.</div>
+      </div>
+
+      <div class="col-md-2">
+        <label for="Emp_Status" class="form-label">Status</label>
+        <div class="switchToggle">
+          <input type="checkbox" class="form-control" name="Emp_Status" id="switch"
+  
+          {% if employee.Emp_Status == True %}
+            checked
+            {% endif %}
+          {% if details != '' %} disabled {% endif%}>
+          <label for="switch">Toggle</label>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <label for="Contact_Number" class="form-label">Contact Number</label>
+        <input class="form-control" name="Contact_Number" type="tel" name="telphone" placeholder="888 888 8888" 
+        pattern="[0-9]{3}[0-9]{3}[0-9]{4}" maxlength="10"  title="Ten digits code"
+        value='{% if employee.Contact_Number %}{{employee.Contact_Number}}{% endif %}' required
+          {% if details != '' %} disabled {% endif%}>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please Enter Contact Number.</div>
+      </div>
+
+
+    <div class="col-md-4">
+      <label for="First_Name" class="form-label">First Name</label>
+      <input type="text" class="form-control" placeholder="Enter First Name" 
+        name="First_Name" value='{% if employee.First_Name %}{{employee.First_Name}}{% endif %}' required
+        {% if details != '' %} disabled {% endif%}>
+      <div class="valid-feedback">Valid.</div>
+      <div class="invalid-feedback">Please Enter First Name.</div>
+    </div>
+
+    <div class="col-md-4">
+        <label for="Middle_Name" class="form-label">Middle Name</label>
+        <input type="text" class="form-control" placeholder="Enter Middle Name" 
+          name="Middle_Name" value='{% if employee.Middle_Name %}{{employee.Middle_Name}}{% endif %}'
+          {% if details != '' %} disabled {% endif%}>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please Enter Middle Name.</div>
+    </div>
+
+    <div class="col-md-4">
+        <label for="Last_Name" class="form-label">Last Name</label>
+        <input type="text" class="form-control" placeholder="Enter Last Name" 
+          name="Last_Name" value='{% if employee.Last_Name %}{{employee.Last_Name}}{% endif %}' required
+          {% if details != '' %} disabled {% endif%}>
+        <div class="valid-feedback">Valid.</div>
+        <div class="invalid-feedback">Please Enter Last Name.</div>
+    </div>
+
+    <div class="col-md-2">
+          <label for="Dept_Id" class="form-label">Department</label>
+          <select name="Dept_Id"  class=" form-select form-select-sm rounded-2" required
+          {% if details != '' %} disabled {% endif%}>
+            {% if not employee.Dept_Id %}
+            <option value="0" disabled selected>Please Select Department</option>
+            {% else %}
+            <option value="0" disabled>Please Select Department</option>
+            {% endif %}
+            {% for department in departments %}
+                {% if employee.Dept_Id and employee.Dept_Id == department.Dept_Id %}
+                <option value="{{ department.Dept_Id }}" selected>{{ department.Dept_Name }}</option>
+                {% else %}
+                <option value="{{ department.Dept_Id }}">{{ department.Dept_Name }}</option>
+                {% endif %}
+            {% endfor %}
+
+          </select>
+      </div>
+      
+      <div class="col-md-2">
+        <label for="Desg_Id" class="form-label">Designation</label>
+        <select name="Desg_Id"  class="form-select form-select-sm rounded-2" 
+        {% if details != '' %} disabled {% endif%}>
+          {% if not employee.Desg_Id %}
+          <option value="0" disabled selected>Please Select Designation</option>
+          {% else %}
+          <option value="0" disabled>Please Select Designation</option>
+          {% endif %}
+          {% for designation in designations %}
+              {% if employee.Desg_Id and employee.Desg_Id == designation.Desg_Id %}
+              <option value="{{ designation.Desg_Id }}" selected>{{ designation.Desg_Name }}</option>
+              {% else %}
+              <option value="{{ designation.Desg_Id }}">{{ designation.Desg_Name }}</option>
+              {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label for="Role_Id" class="form-label">Role</label>
+        <select name="Role_Id"  class="form-select form-select-sm rounded-2" 
+        {% if details != '' %} disabled {% endif%}>
+          {% if not employee.Role_Id %}
+          <option value="0" disabled selected>Please Select Role</option>
+          {% else %}
+          <option value="0" disabled>Please Select Role</option>
+          {% endif %}
+          {% for role in roles %}
+              {% if employee.Role_Id and employee.Role_Id == role.Role_Id %}
+              <option value="{{ role.Role_Id }}" selected>{{ role.Role_Name }}</option>
+              {% else %}
+              <option value="{{ role.Role_Id }}">{{ role.Role_Name }}</option>
+              {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label for="Emp_Sex" class="form-label">Gender</label>
+        <select name="Emp_Sex"  class="form-select form-select-sm rounded-2" 
+        {% if details != '' %} disabled {% endif%}>
+        
+        {% if not employee.Emp_Sex %}
+          <option value="0" disabled selected>Please Select Gender</option>
+          {% else %}
+          <option value="0" disabled>Please Select Gender</option>
+          {% endif %}
+          {% for role in roles %}
+              {% if employee.Emp_Sex and employee.Emp_Sex == "Male" %}
+              <option value="{{ 1 }}" selected>{{ employee.Emp_Sex }}</option>
+              {% elif employee.Emp_Sex and employee.Emp_Sex == "Female" %}
+              <option value="{{ 2 }}" selected>{{ employee.Emp_Sex }}</option>
+              {% else %}
+              <option value="1" >Male</option>
+              <option value="2">Female</option>
+              {% endif %}
+          {% endfor %}
+          
+        </select>
+      </div>
+
+      <div class="col-md-2">
+          <label for="Joining_Date" class="form-label">Joining Date</label>
+          <input type="date" name="Joining_Date" id="date_hired" class="form-control form-control-sm " 
+          value="{% if employee.Joining_Date %}{{ employee.Joining_Date|date:'Y-m-d' }}{% endif %}"
+          {% if details != '' %} disabled {% endif%}>
+      </div>   
+      
+      <div class="col-md-2">
+        <label for="Birth_Date" class="form-label">Date of Birth</label>
+        <input type="date" name="Birth_Date" id="date_hired" class="form-control form-control-sm "
+          value="{% if employee.Birth_Date %}{{ employee.Birth_Date|date:'Y-m-d' }}{% endif %}"       
+          {% if details != '' %} disabled {% endif%}>
+      </div>
+
+  </div>
+
+  {% if  employee.Emp_Id is not None    %}
+  
+  
+  <div class="row g-3">
+    <div class="col-md-3">
+      <label for="Created_By" class="form-label">Created By</label>
+      <input type="text" readonly  class="form-control"
+        placeholder="Created By" name="Created_By"  value="{{department.Created_By}}">
+    </div>
+    <div class="col-md-3">
+      <label for="Created_Date" class="form-label">Created Date</label>
+      <input type="text"  class="form-control"  readonly
+        placeholder="Required Department Name" name="Created_Date"  value="{{department.Created_Date}}">
+    </div>
+    <div class="col-md-3">
+      <label for="Modified_By" class="form-label">Modified By</label>
+      <input type="text"  class="form-control"   readonly
+        placeholder="Required Department Name" name="Modified_By"  value="{{department.Modified_By}}">
+    </div>
+    <div class="col-md-3">
+      <label for="Modified_Date" class="form-label">Modified Date</label>
+      <input type="text"  class="form-control"  readonly
+        placeholder="Required Department Name" name="Modified_Date"  value="{{department.Modified_Date}}">
+    </div>
+  </div>
+    {% endif %}
+  
+    {% if details == '' %}
+    <div class="row mb-3">
+      <div class="col-md-6 mb-3">
+        <button class="btn btn-secondary" type="reset" >Reset form</button>
+      </div>
+      <div class="col-md-6 mb-3">
+        <a class="btn btn-danger " type="Cancel" href="{% url 'department' %}" >Cancel</a>
+        <button class="btn btn-primary" type="submit" >Submit</button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+  </form>
+</div>
+
+
+
+{% endblock content %}   {% block javascripts %}
+<script type="text/javascript">
+  $(document).on("submit","#employee-form",function(e){
+    e.preventDefault();
+  var dataString = $(this).serialize();
+  $("#validation_box").attr('aria-hidden', 'true');
+
+  $.ajax({
+    type:'POST',
+    url:  "{% url 'save_emp' %}",
+    data: dataString,
+    success: function(data){
+      $('strong').html(data.msg);
+      if(data.status == 'failed'){
+        $("#validation_box").attr('aria-hidden', 'false').addClass("alert-danger show alert  alert-dismissible fade show");
+      }
+      else{
+        $("#validation_box").attr('aria-hidden', 'true').addClass("alert-success show alert  alert-dismissible fade show");
+        window.location.href = "{% url 'employee' %}";
+      }
+
+    }
+  })
+  });
+</script>
+{% endblock javascripts %}
