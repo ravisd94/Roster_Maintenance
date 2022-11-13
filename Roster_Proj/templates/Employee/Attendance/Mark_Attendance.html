@@ -1,0 +1,374 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Tables Data {% endblock %} 
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} {% endblock body_class %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/fontawesome-free/css/all.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/static/assets_New/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/static/assets_New/css/adminlte.min.css">
+
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="/static/assets_New/plugins/toastr/toastr.min.css">
+  <!-- iCheck for checkboxes and radio inputs -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="/static/assets_New/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  
+  <!-- Bootstrap4 Duallistbox -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+  
+ 
+{% endblock stylesheets %}
+
+{% block content %} 
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+
+    <section class="content my-1">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card card-secondary">
+            <div class="card-header">
+              <h3 class="card-title">Mark the Attendance</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <form id="mark-attendance">
+                {% csrf_token %}
+              <div class="row">
+                <div class="col-4">
+                  <div class="form-group">
+                    <label for="Emp_Id">Employee</label>
+                    <select name="Emp_Id" id="Emp_Id" class="form-control select2bs4" style="width: 100%;">
+                        {% if not assign_shift.Emp_Id %}
+                        <option value="0" disabled selected>Please Select Employee</option>
+                        {% else %}
+                        <option value="0" disabled>Please Select Employee</option>
+                        {% endif %}
+                        {% for employee in employees %}
+                            {% if assign_shift.Emp_Id and assign_shift.Emp_Id == employee.Emp_Id %}
+                            <option value="{{ employee.Emp_Id }}" selected>{{ employee.Email_ID }}</option>
+                            {% else %}
+                            <option value="{{ employee.Emp_Id }}">{{ employee.Email_ID }}</option>
+                            {% endif %}
+                        {% endfor %}
+                </select>
+                  </div>
+                </div>
+
+                <div hidden>
+                  <input type="text" id="Attendance_Id" name="Attendance_Id">
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Attendance Date</label>
+                          <div class="input-group date" id="reservationdate">
+                            <input type="date" class="form-control datetimepicker-input" disabled
+                            value="{{ todays_date |date:'Y-m-d' }}">
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                      <div class="form-group">
+                          <label>Shift Start Time</label>
+                            <div class="input-group date" id="reservationdate">
+                              <input id="Shift_Start_Time" type="text" class="form-control" disabled>
+                            </div>
+                          </div>
+                      </div>
+
+                      <div class="col-2">
+                        <div class="form-group">
+                            <label>Shift End Time</label>
+                              <div class="input-group date" id="reservationdate">
+                                <input id="Shift_End_Time" type="text" class="form-control" disabled>
+                              </div>
+                            </div>
+                        </div>
+
+                </div>
+                <div class="card-footer " id="card_footer_mark_attendance" style='display:none;'>
+                    <button type="submit" id="btn_punch_in_punch_out"></button>
+              </div>
+              </form>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+      </div>
+    </section>
+
+    <section class="content-header">
+      <div class="container-fluid">
+
+        <div class="row ">
+          <div class="col-sm-12">
+            <h1><b>Timesheet of employees</b></h1>
+          </div>
+
+        </div>
+        {% for message  in messages %}
+          <div class="alert {{ message.tags }} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-check"></i> {{message}}</h5>
+          </div>
+        {% endfor %}
+
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- /.card -->
+            <div class="card">
+
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-hover">
+                  <thead>
+                  <tr>
+                    <th>Emp Id</th>
+                    <th>Employee Name</th>
+                    <th>Date</th>
+                    <th>In Time</th>
+                    <th>Out Time</th>
+                    <th>Attendance Status</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                        {% for timesheet in timesheets %}
+                        <th>{{ timesheet.Emp_Id.Emp_Id }}</th>
+                        <td>{{ timesheet.Emp_Id }}</td>
+                        <td>{{ timesheet.Attendance_Date }}</td>
+                        <td>{{ timesheet.Clock_In_Time }}</td>
+                        <td>{{ timesheet.Clock_Out_Time }}</td>
+                        <td>
+                          {% if timesheet.Attendance_Type_Id.Attendance_Type_Name == "Half Day" %}
+                          <span class="badge badge-warning">Half Day</span>
+                          {% elif  timesheet.Attendance_Type_Id.Attendance_Type_Name == "Present" %}
+                          <span class="badge badge-success">Present</span>
+                          {% else%}
+                          <span class="badge badge-danger">Absent</span>
+                          {% endif %}
+                      </td>
+                    </tr>
+                        {% endfor %}
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>Rendering engine</th>
+                    <th>Rendering engine</th>
+                    <th>Browser</th>
+                    <th>Platform(s)</th>
+                    <th>Engine version</th>
+                    <th>Attendance Status</th>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+ <!-- jQuery -->
+ <script src="/static/assets_New/plugins/jquery/jquery.min.js"></script>
+ <!-- Bootstrap 4 -->
+ <script src="/static/assets_New/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+ <!-- jquery-validation -->
+ <script src="/static/assets_New/plugins/jquery-validation/jquery.validate.min.js"></script>
+ <script src="/static/assets_New/plugins/jquery-validation/additional-methods.min.js"></script>
+ 
+ <!-- SweetAlert2 -->
+ <script src="/static/assets_New/plugins/sweetalert2/sweetalert2.min.js"></script>
+ <!-- Toastr -->
+ <script src="/static/assets_New/plugins/toastr/toastr.min.js"></script>
+
+ <!-- AdminLTE App -->
+ <script src="/static/assets_New/js/adminlte.min.js"></script>
+ 
+<script>
+  $(function() {
+    $("#Emp_Id").change(function(e) {
+        alert($('option:selected', this).text());
+        e.preventDefault();
+        console.log(e);
+        var dataString = $(this).serialize();
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'Get_Shift_Details' %}",
+            data: dataString,
+            success: function(data) {
+              $("#card_footer_mark_attendance").css("display", "block");
+              console.log('att id:' + data.attendance_Status)
+              if(data.attendance_Status == false)
+              {
+                $("#btn_punch_in_punch_out").addClass('btn float-right ml-2 btn btn-success').text("Punch In")
+              }
+              else if(data.attendance_Status == "Marked Clock In")
+              {
+                $("#btn_punch_in_punch_out").addClass('btn float-right ml-2 btn btn-danger').text("Punch Out")
+              }
+              else
+              {
+                $("#btn_punch_in_punch_out").attr('disabled','disabled').addClass('btn float-right ml-2 btn btn-info')
+                .text("Attendance is already marked for selected employee " + data.attendance_Status);
+              }
+
+              $("#Shift_Start_Time").val(data.Shift_Start_Time)
+              $("#Shift_End_Time").val(data.Shift_End_Time)
+              $("#Attendance_Id").val(data.Attendance_Id)
+
+              console.log(data.Shift_Start_Time)
+              console.log(data.Shift_End_Time)
+            }
+          });
+    });
+  });
+
+</script>
+
+<script>
+  $(document).ready(function(){
+    console.log('ready');
+    //get it if Status key found
+    if(localStorage.getItem("status") && localStorage.getItem("msg"))
+    {
+      var status = localStorage.getItem("status");
+      var msg = localStorage.getItem("msg");
+      console.log('value: ' + status + 'msg: ' + msg)
+      var i=''
+      if(status == "success")
+      {
+        i = 'success'
+      }
+      else{
+        i = 'error'
+      }
+
+        $(function() {
+          var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 10000
+          });
+          $(function() {
+            Toast.fire({
+              icon: i,
+              title: msg
+            })
+          });      
+        });
+
+        localStorage.clear();
+    }
+
+    //$(function() {
+    //  var Toast = Swal.mixin({
+    //    toast: true,
+    //    position: 'top-end',
+    //    showConfirmButton: false,
+    //    timer: 10000
+    //  });
+    //  $(function() {
+    //    Toast.fire({
+    //      icon: 'error',
+    //      title: data.msg
+    //    })
+    //  });      
+    //});
+
+});
+</script>
+
+<script>
+  $(document).on("submit","#mark-attendance",function(e){
+    e.preventDefault();
+  var dataString = $(this).serialize() + "&btn_clock_in_clock_out=" + $("#btn_punch_in_punch_out").text();
+  $("#validation_box").css('display', 'block');
+
+  $.ajax({
+    type:'POST',
+    url:  "{% url 'Clock_In_Clock_Out' %}",
+    data: dataString,
+    success: function(data){
+      localStorage.setItem("status",data.status)
+      localStorage.setItem("msg",data.msg)
+      location.reload(true);
+      
+      //if(data.status == 'success')
+      //{
+      //  //console.log('msg success')
+      // 
+      //  localStorage.setItem("msg",data.msg)
+      //  //console.log(localStorage.getItem("Status"))
+      //  //console.log('msg' + data.msg)
+      //  location.reload(true);
+      //  
+      //  
+      //}
+      //else
+      //{
+      //  console.log('msg else success')
+      //  console.log(data.status)
+      //  //localStorage.setItem("Status",data.msg)
+      //  //console.log(localStorage.getItem("Status"))
+      //  //console.log('msg' + data.msg)
+      //  //location.reload(true);
+      //}
+
+    }
+  })
+  });
+</script>
+
+{% comment %} Ajax POST {% endcomment %}
+
+
+
+  
+{% endblock javascripts %}

@@ -57,7 +57,17 @@ urlpatterns = [
 
     # Shift Calender
     path('shift/calender', views.shift_calender, name="shift_calender"),
+    path('Get_Assigned_Shifts', views.Get_Assigned_Shifts, name="Get_Assigned_Shifts"),
     # End Shift Calender
-    # # End Shift Urls
 
+    # # End Shift Urls
+    # Attendance
+    path('attendance/timesheet', views.timesheet, name="timesheet"),
+    path('attendance/mark_attendance', views.mark_attendance, name="mark_attendance"),
+    path('Get_Shift_Details', views.Get_Shift_Details, name="Get_Shift_Details"),
+    path('attendance/Clock_In_Clock_Out', views.Clock_In_Clock_Out, name="Clock_In_Clock_Out"),
+    path('attendance/calender', views.attendance_calender, name="attendance_calender"),
+    path('Get_Calender_Details', views.Get_Calender_Details, name="Get_Calender_Details"),
+    
+    # End Attendance
 ]

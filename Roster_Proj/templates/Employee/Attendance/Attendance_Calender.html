@@ -28,7 +28,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Shjift Assign Calendar</h1>
+          <h1>Attendance Calendar</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -150,7 +150,7 @@
         var dataString = $(this).serialize();
         $.ajax({
             type: 'GET',
-            url: "{% url 'Get_Assigned_Shifts' %}",
+            url: "{% url 'Get_Calender_Details' %}",
             data: dataString,
             success: function(data) {
 
@@ -204,7 +204,7 @@
 
                 var i =0;
                 var shift_colors={};
-                var colors = ['red','green','blue','yellow'];
+                var colors = ['red','green','yellow'];
                 $("#ul_shifts").empty();
 
                 $.each(data.shifts, function (key, value) {

@@ -3,6 +3,7 @@ from django.db import models
 from datetime import datetime
 from django.utils import timezone
 
+
 # Create your models here.
 
 class Dept_Master(models.Model):
@@ -138,5 +139,63 @@ class Employee_Shift_Master(models.Model):
     Created_Date=models.DateTimeField(default=timezone.now) 
     Modified_By=models.IntegerField(null=True,blank=True)
     Modified_Date=models.DateTimeField(auto_now=True) 
+
+class Attendance_Type(models.Model):
+    Attendance_Type_Id=models.AutoField(primary_key=True)
+    Attendance_Type_Name =models.CharField(max_length=100)
+    Attendance_Type_Code =models.CharField(max_length=5)
+    Attendance_Type_Description =models.CharField(max_length=200)
+    Created_By=models.IntegerField(null=True,blank=True)
+    Created_Date=models.DateTimeField(default=timezone.now) 
+    Modified_By=models.IntegerField(null=True,blank=True)
+    Modified_Date=models.DateTimeField(auto_now=True) 
+
+    def __str__(self):
+        return self.Attendance_Type_Name
+
+class Attendance_Master(models.Model):
+    Attendance_Id=models.AutoField(primary_key=True)
+    Attendance_Type_Id=models.ForeignKey(Attendance_Type, on_delete=models.CASCADE,null=True, blank=True)
+    Emp_Id=models.ForeignKey(Emp_Master, on_delete=models.CASCADE)
+    Attendance_Date=models.DateField()
+    Clock_In_Time=models.TimeField(null=True,blank=True)
+    Clock_Out_Time=models.TimeField(null=True,blank=True)
+    Created_By=models.IntegerField(null=True,blank=True)
+    Created_Date=models.DateTimeField(default=timezone.now) 
+    Modified_By=models.IntegerField(null=True,blank=True)
+    Modified_Date=models.DateTimeField(auto_now=True) 
+
+    def is_attendance_marked(Emp_Id,Attendance_Date):
+        att_id = Attendance_Master.objects.filter(
+            Emp_Id=Emp_Master.objects.filter(Emp_Id=Emp_Id).first(),
+            Attendance_Date = Attendance_Date).first()
+        if att_id:
+            if att_id.Clock_In_Time != None and att_id.Clock_Out_Time != None:
+                return ("Clocked in time: " + str(att_id.Clock_In_Time.strftime("%I:%M %p")) + 
+                    " and Clocked out time: " + str(att_id.Clock_Out_Time.strftime("%I:%M %p"))),att_id.Attendance_Id
+            elif att_id.Clock_In_Time != None:
+                return "Marked Clock In",att_id.Attendance_Id
+                
+        return False
+
+    def attendance_code(t):
+        print('here')
+        print(t)
+        # print(clock_out)
+        # if(clock_in != '' and clock_out != ''):
+        # diff_clock = clock_out - clock_in
+        # diff_clock = datetime.combine(date.today(), clock_out) - datetime.combine(date.today(), clock_in)
+        # diff_clock = datetime.time(clock_out) - datetime.time(clock_in)
+        # print(diff_clock.total_seconds() / (60 * 60))
+        delta_hours = t.days * 24 + t.seconds / 3600.0
+        print(delta_hours)
+        if delta_hours < 4:
+            return Attendance_Type.objects.filter(Attendance_Type_Code = 'HD').first()
+        elif delta_hours >= 8 :
+            return Attendance_Type.objects.filter(Attendance_Type_Code = 'P').first()
     
+    # def is_Clocked_In(att_id):
+    #     if Attendance_Master.objects.filter(Attendance_Id=att_id,Clock_In_Time__isnull=True):
+    #         return False
+    #     return True
 

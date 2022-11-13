@@ -33,10 +33,16 @@
         </div>
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1><b>Assign Shift</b></h1>
+            <h1><b>Timesheet</b></h1>
           </div>
-          <div class="col-sm-6">
-            <a href="{% url 'shift/assign/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Assign Shift to Employee</a>
+          <div class="col-sm-6 ">
+            <a href="{% url 'mark_attendance' %}" class="btn btn-info float-right mx-2">
+              <i class="fas fa-plus"> Mark Attendance</i> 
+            </a>
+            
+            <a href="{% url 'shift/manage' %}" class="btn btn-success float-right mx-2">
+              <i class="fas fa-clock"> Clock in</i> 
+            </a>
           </div>
         </div>
         {% for message  in messages %}
@@ -66,32 +72,31 @@
                 <table id="example1" class="table table-hover">
                   <thead>
                   <tr>
-                    <th>Id</th>
+                    <th>Emp Id</th>
                     <th>Employee Name</th>
-                    <th>Shift</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Status</th>
+                    <th>Date</th>
+                    <th>In Time</th>
+                    <th>Out Time</th>
+                    <th>Attendance Status</th>
                   </tr>
                   </thead>
                   <tbody>
                     <tr>
-                        {% for assign_shift in assign_shifts %}
-                        <th>{{ assign_shift.Emp_Shift_Id }}</th>
-                        <td>{{ assign_shift.Emp_Id }}</td>
-                        <td>{{ assign_shift.Shift_Id }}</td>
-                        <td>{{ assign_shift.Start_Date }}</td>
-                        <td>{{ assign_shift.End_Date }}</td>
+                        {% for timesheet in timesheets %}
+                        <th>{{ timesheet.Emp_Id.Emp_Id }}</th>
+                        <td>{{ timesheet.Emp_Id }}</td>
+                        <td>{{ timesheet.Attendance_Date }}</td>
+                        <td>{{ timesheet.Clock_In_Time }}</td>
+                        <td>{{ timesheet.Clock_Out_Time }}</td>
                         <td>
-                            <a href="assign/manage?details={{assign_shift.Emp_Shift_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
-                            <a href="assign/manage?id={{assign_shift.Emp_Shift_Id }}">
-                              <i title="Edit" class="far fa fa-edit nav-icon px-1"></i>
-                            </a>
-                            <a href="assign/delete?id={{ assign_shift.Emp_Shift_Id }}" 
-                              onclick="return confirm('Are you sure you want to delete?')">
-                              <i title="Delete" class="far fa fa-trash nav-icon px-1"></i>
-                            </a>
-                        </td>
+                          {% if timesheet.Attendance_Type_Id.Attendance_Type_Name == "Half Day" %}
+                          <span class="badge badge-warning">Half Day</span>
+                          {% elif  timesheet.Attendance_Type_Id.Attendance_Type_Name == "Present" %}
+                          <span class="badge badge-success">Present</span>
+                          {% else%}
+                          <span class="badge badge-danger">Absent</span>
+                          {% endif %}
+                      </td>
                     </tr>
                         {% endfor %}
                   </tbody>
@@ -101,7 +106,8 @@
                     <th>Rendering engine</th>
                     <th>Browser</th>
                     <th>Platform(s)</th>
-                    <th>Engine version</th><th>Engine version</th>
+                    <th>Engine version</th>
+                    <th>Attendance Status</th>
                   </tr>
                   </tfoot>
                 </table>

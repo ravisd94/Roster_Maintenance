@@ -23,3 +23,31 @@ DB Queries
 --To get all the tables name
 Select * from SQLite_master
 Select * from Employee_App_emp_master
+
+
+//reset primaru key
+delete from Employee_App_attendance_type;    
+delete from sqlite_sequence where name='Employee_App_attendance_type';
+
+
+-- SQLite
+Select * from Employee_App_attendance_master;
+
+DELETE FROM Employee_App_attendance_master
+WHERE Attendance_Id	=3;
+
+Select * from Employee_App_attendance_master;
+
+// insert values
+insert into Employee_App_attendance_type
+(Attendance_Type_Name,
+Attendance_Type_Code,
+Attendance_Type_Description,
+Created_Date,
+Modified_Date
+)
+values
+('Absent','A','Absent',date('now'),date('now')),
+('Present (Late)','PL','If Emloyee mark the attendance after 30 minutes of clock in time',date('now'),date('now')),
+('Half Day','A','If Emloyee only complete 4 Hrs. of shift',date('now'),date('now'))
+;

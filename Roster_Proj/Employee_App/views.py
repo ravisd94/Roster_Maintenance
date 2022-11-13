@@ -3,7 +3,7 @@ from msilib.schema import _Validation
 from urllib import response
 from xml.dom import ValidationErr
 from django.shortcuts import render
-from .models import Emp_Master,Dept_Master,Designation_Master, Role_Master, Shift_Master, Employee_Shift_Master
+from .models import Emp_Master,Dept_Master,Designation_Master, Role_Master, Shift_Master, Employee_Shift_Master,Attendance_Master, Attendance_Type
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -12,6 +12,7 @@ from django.contrib import messages #import messages
 from django import forms
 from .forms import RoleForm_Add
 import re
+import random
 
 # Create your views here.
 def index(request):
@@ -1000,15 +1001,14 @@ def manage_assign_shift(request):
     }
     return render(request, 'Employee/Shift/manage_assign_shift.html',context)
 
-
 def delete_assign_shift(request):
     try:
         id = request.GET['id']
-        Dept_Master.objects.filter(Dept_Id = id).delete()
-        messages.warning(request, "Department id: "+str(id)+" Deleted successfully")
+        Employee_Shift_Master.objects.filter(Emp_Shift_Id=id).delete()
+        messages.warning(request, "Shift has been Deleted successfully")
     except Exception as e:
         messages.error(request,"Somehing went wrong!, please contact to system administrator...")
-    return HttpResponseRedirect("/department")
+    return HttpResponseRedirect("/assign_shift")
 
 def save_assign_shift(request):
     if request.method == 'POST':
@@ -1099,11 +1099,214 @@ def save_assign_shift(request):
 # End Assign Shift Views
 def shift_calender(request):
     assign_shift_list = Employee_Shift_Master.objects.all()
+    emp_active_list = Emp_Master.objects.all()
+    shift_list=Shift_Master.objects.all()
     context = {
         'page_title':'Employee',
+        'employees' : emp_active_list,
+        'shifts' : shift_list,
         'assign_shifts':assign_shift_list,
     }
     return render(request, 'Employee/Shift/Shift_Calender.html',context)
+
+def Get_Assigned_Shifts(request):
+    if request.method == 'GET':
+        data =  request.GET
+        
+        print("------------------All Key value Pairs-------------")
+        for key, value in data.items():
+            print('Key: %s' % (key) ) 
+            print('Value %s' % (value) )
+        print("------------------End All Key value Pairs-------------")
+
+        assign = Employee_Shift_Master.objects.filter(Emp_Id=data['Emp_Id'])
+        Shif_Names= assign.distinct()
+        shifts=[]
+        for t in assign:
+            if not shifts.__contains__(t.Shift_Id.Shift_Name):
+                shifts.append(t.Shift_Id.Shift_Name)
+        print(shifts)
+        resp = {'status':'failed', 'shift_data': '' , 'shifts' : ''}
+        Final_Json_Data=[]
+        print("start -------------------------")
+        for item in assign:
+            r = lambda: random.randint(0,255)
+            # if not test.__contains__(item.Shift_Id.Shift_Name):
+            # if item.Shift_Id.Shift_Name not in test:
+            #     print('title: ' + item.Shift_Id.Shift_Name)
+            #     bg_color='#%02X%02X%02X' % (r(),r(),r())
+            #     print(Final_Json_Data)
+                # test.append(item.Shift_Id.Shift_Name)
+            Final_Json_Data.append(
+                {
+                    'title': item.Shift_Id.Shift_Name,
+                    'Start_Date': + (item.Start_Date-datetime.date.today()).days,
+                    'length':abs((item.Start_Date-item.End_Date).days),
+                }
+                )
+        # print(test)
+        resp['status'] = 'success'
+        resp['shift_data'] = Final_Json_Data
+        resp['shifts'] = shifts
+        
+    return HttpResponse(json.dumps(resp), content_type="application/json")
 # Shift Calender
 
 # End Shift Calender
+
+# Attendance
+def timesheet(request):
+    timesheet_list = Attendance_Master.objects.all()
+    context = {
+        'page_title':'Timesheet',
+        'timesheets':timesheet_list,
+    }
+    for t in timesheet_list:
+        print(str(t.Attendance_Date))
+    return render(request, 'Employee/Attendance/Timesheets.html',context)
+
+def mark_attendance(request):
+    Emp_Active_List = Emp_Master.objects.filter(Emp_Status=True).all()
+    timesheet_list_today = Attendance_Master.objects.filter(Attendance_Date=datetime.date.today())
+    Shift_Details = Employee_Shift_Master.objects.filter()
+    card_header='Mark the attendance' 
+
+    context = {
+        'employees' : Emp_Active_List,
+        'card_header': card_header,
+        'timesheets':timesheet_list_today,
+        'todays_date': datetime.date.today()
+    }
+    return render(request, 'Employee/Attendance/Mark_Attendance.html',context)
+
+def Clock_In_Clock_Out(request):
+    if request.method == 'POST':
+        data =  request.POST
+        resp = {'status':'failed', 'msg': ''}
+        print("------------------All Key value Pairs-------------")
+        for key, value in data.items():
+            print('Key: %s' % (key) ) 
+            print('Value %s' % (value) )
+        print("------------------End All Key value Pairs-------------")
+        
+        Emp_Id=''
+        Attendance_Id=''
+        btn_clock_in_clock_out=''
+
+        try:
+            if 'Emp_Id' in data:
+                Emp_Id = data['Emp_Id']
+
+            if 'Attendance_Id' in data:
+                Attendance_Id = data['Attendance_Id']
+
+            if 'btn_clock_in_clock_out' in data:
+                btn_clock_in_clock_out = data['btn_clock_in_clock_out']
+            
+            Emp = Emp_Master.objects.filter(Emp_Id=Emp_Id).first()
+
+            if btn_clock_in_clock_out == "Punch In":
+                
+                save_attendance = Attendance_Master(
+                    Emp_Id=Emp,
+                    Attendance_Date=datetime.date.today(),
+                    Clock_In_Time = datetime.datetime.now().time(),
+                    Attendance_Type_Code = Attendance_Type.objects.filter(Attendance_Type_Code = 'P')
+                    )
+                save_attendance.save()
+                resp['msg']=str("Attendance has been marked successfully for user: " + 
+                Emp.First_Name + " " + Emp.Middle_Name +  " " + Emp.Last_Name)
+            
+            elif btn_clock_in_clock_out == "Punch Out":
+                print("test")
+                current_time = datetime.datetime.now().time()
+                print(current_time)
+                clock_in=Attendance_Master.objects.filter(Attendance_Id = Attendance_Id).first()
+                print(clock_in.Clock_In_Time)
+                att_Type_Code = Attendance_Master.attendance_code(
+                     datetime.datetime.combine(datetime.date.today(), current_time) - datetime.datetime.combine(datetime.date.today(), clock_in.Clock_In_Time)
+                    )
+
+                print(att_Type_Code.Attendance_Type_Name)
+                Attendance_Master.objects.filter(Attendance_Id = Attendance_Id).update(
+                    Clock_Out_Time = current_time,
+                    Attendance_Type_Id=att_Type_Code
+                )
+                resp['msg'] =str("Clocked out successfully for user: " +
+                Emp.First_Name + " " + Emp.Middle_Name +  " " + Emp.Last_Name)
+            
+            resp['status'] = 'success'
+            print(str(resp['status'] ))
+            print(str(resp['msg'] ))
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+
+        except Exception as e:
+            resp['msg'] =str("Something went wrong please contact to system admin." + str(e))
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+            
+def Get_Shift_Details(request):
+    resp = {'Shift_Start_Time': '','Shift_End_Time': '', 'attendance_Status': None, 'Attendance_Id':''}
+    if request.method == 'GET':
+        data =  request.GET
+    print("------------------All Key value Pairs-------------")
+    for key, value in data.items():
+        print('Key: %s' % (key) ) 
+        print('Value %s' % (value) )
+    print("------------------End All Key value Pairs-------------")
+    # emp = Emp_Master.objects.filter(Emp_Id=data['Emp_Id']).first()
+        
+    assign = Employee_Shift_Master.objects.filter(
+        Emp_Id=data['Emp_Id'],
+        Start_Date__lte=datetime.date.today(),
+        End_Date__gte=datetime.date.today()
+        ).first()
+    if not assign :
+        print("No data")
+    else:
+        resp['Shift_Start_Time']=str(assign.Shift_Id.Shift_Start_Time.strftime("%I:%M %p"))
+        resp['Shift_End_Time']=str(assign.Shift_Id.Shift_End_Time.strftime("%I:%M %p"))
+        print('start date:' + str(assign.Shift_Id.Shift_End_Time))   
+    
+    is_Marked =Attendance_Master.is_attendance_marked(data['Emp_Id'],datetime.date.today())
+    print(is_Marked)
+    if is_Marked == False:
+        resp['attendance_Status']=is_Marked
+    else:
+        resp['attendance_Status']=is_Marked[0]
+        resp['Attendance_Id'] = is_Marked[1]
+
+    print('attendanc marked:' + str(resp['attendance_Status']))
+    return HttpResponse(json.dumps(resp), content_type="application/json")
+
+def attendance_calender(request):
+    assign_shift_list = Employee_Shift_Master.objects.all()
+    emp_active_list = Emp_Master.objects.all()
+    shift_list=Shift_Master.objects.all()
+    context = {
+        'page_title':'Employee',
+        'employees' : emp_active_list,
+        'shifts' : shift_list,
+        'assign_shifts':assign_shift_list,
+    }
+    return render(request, 'Employee/Attendance/Attendance_Calender.html',context)
+
+def Get_Calender_Details(request):
+    resp = {'Clock_In_Time': '','Clock_Out_Time': '', 'attendance_Status': ''}
+    if request.method == 'GET':
+        data =  request.GET
+        print("------------------All Key value Pairs-------------")
+        for key, value in data.items():
+            print('Key: %s' % (key) ) 
+            print('Value %s' % (value) )
+        print("------------------End All Key value Pairs-------------")
+        EMP = Emp_Master.objects.filter(Emp_Id =data['Emp_Id']).first()
+        print(EMP.Joining_Date)
+        attendance_mark_details = Attendance_Master.objects.filter(
+        Emp_Id=EMP
+        )
+        print(attendance_mark_details)
+        for item in attendance_mark_details:
+            print(item)
+        return HttpResponse(json.dumps(resp), content_type="application/json")
+
+# ENd Attendance
