@@ -3,20 +3,44 @@
 {% block title %} Blank Page {% endblock %} 
 
 <!-- Element injected in the BODY element -->
-{% block body_class %} {% endblock body_class %} 
+{% block body_class %} sidebar-mini {% endblock body_class %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="/static/assets_New/plugins/fontawesome-free/css/all.min.css">
-  <!-- fullCalendar -->
-  <link rel="stylesheet" href="/static/assets_New/plugins/fullcalendar/main.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="/static/assets_New/css/adminlte.min.css">
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="/static/assets_New/plugins/fontawesome-free/css/all.min.css">
+<!-- DataTables -->
+<link rel="stylesheet" href="/static/assets_New/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="/static/assets_New/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="/static/assets_New/css/adminlte.min.css">
 
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="/static/assets_New/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="/static/assets_New/plugins/toastr/toastr.min.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="/static/assets_New/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="/static/assets_New/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Select2 -->
+<link rel="stylesheet" href="/static/assets_New/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="/static/assets_New/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<!-- Bootstrap4 Duallistbox -->
+<link rel="stylesheet" href="/static/assets_New/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+
+<!-- fullCalendar -->
+<link rel="stylesheet" href="/static/assets_New/plugins/fullcalendar/main.min.css">
+<link rel="stylesheet" href="/static/assets_New/plugins/fullcalendar-daygrid/main.min.css">
+<link rel="stylesheet" href="/static/assets_New/plugins/fullcalendar-timegrid/main.min.css">
+<link rel="stylesheet" href="/static/assets_New/plugins/fullcalendar-bootstrap/main.min.css">
+    
 {% endblock stylesheets %}
 
 {% block content %}
@@ -118,16 +142,27 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-  <!-- jQuery -->
-  <script src="/static/assets_New/plugins/jquery/jquery.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="/static/assets_New/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <!-- jQuery UI -->
-  <script src="/static/assets_New/plugins/jquery-ui/jquery-ui.min.js"></script>
-  <!-- AdminLTE App -->
-  <script src="/static/assets_New/js/adminlte.min.js"></script>
-  <!-- AdminLTE for demo purposes -->
-  <script src="/static/assets_New/js/demo.js"></script>
+<!-- jQuery -->
+<script src="/static/assets_New/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/assets_New/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- jquery-validation -->
+<script src="/static/assets_New/plugins/jquery-validation/jquery.validate.min.js"></script>
+<script src="/static/assets_New/plugins/jquery-validation/additional-methods.min.js"></script>
+<!-- Select2 -->
+<script src="/static/assets_New/plugins/select2/js/select2.full.min.js"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script src="/static/assets_New/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="/static/assets_New/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Bootstrap Switch -->
+<script src="/static/assets_New/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/assets_New/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="/static/assets_New/js/demo.js"></script>
+<!-- Page script -->
+
   <!-- fullCalendar 2.2.5 -->
   <script src="/static/assets_New/plugins/moment/moment.min.js"></script>
   <script src="/static/assets_New/plugins/fullcalendar/main.min.js"></script>
@@ -136,6 +171,23 @@
   <script src="/static/assets_New/plugins/fullcalendar-interaction/main.min.js"></script>
   <script src="/static/assets_New/plugins/fullcalendar-bootstrap/main.min.js"></script>
   <!-- Page specific script -->
+
+  
+<script>
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+
+    //Bootstrap Duallistbox
+    $('.duallistbox').bootstrapDualListbox()
+
+  })
+</script>
 
 <script>
   $(function() {
@@ -230,25 +282,7 @@
                   });
                 });
                 console.log(Assign_Shift_Data_JSON)
-
-
                 
-                // initialize the external events
-                // -----------------------------------------------------------------
-
-              //  new Draggable(containerEl, {
-              //    itemSelector: '.external-event',
-              //    eventData: function(eventEl) {
-              //      console.log(eventEl);
-              //      return {
-              //        title: eventEl.innerText,
-              //        backgroundColor: window.getComputedStyle(eventEl, null).getPropertyValue('background-color'),
-              //        borderColor: window.getComputedStyle(eventEl, null).getPropertyValue('background-color'),
-              //        textColor: window.getComputedStyle(eventEl, null).getPropertyValue('color'),
-              //      };
-              //    }
-              //  });
-
                 var calendar = new Calendar(calendarEl, {
                   plugins: ['bootstrap', 'interaction', 'dayGrid', 'timeGrid'],
                   header: {

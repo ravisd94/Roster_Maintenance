@@ -190,9 +190,12 @@ class Attendance_Master(models.Model):
         delta_hours = t.days * 24 + t.seconds / 3600.0
         print(delta_hours)
         if delta_hours < 4:
+            return Attendance_Type.objects.filter(Attendance_Type_Code = 'A').first()
+        elif delta_hours < 8 :
             return Attendance_Type.objects.filter(Attendance_Type_Code = 'HD').first()
         elif delta_hours >= 8 :
             return Attendance_Type.objects.filter(Attendance_Type_Code = 'P').first()
+        
     
     # def is_Clocked_In(att_id):
     #     if Attendance_Master.objects.filter(Attendance_Id=att_id,Clock_In_Time__isnull=True):

@@ -3,7 +3,7 @@
 {% block title %} Tables Data {% endblock %} 
 
 <!-- Element injected in the BODY element -->
-{% block body_class %} {% endblock body_class %} 
+{% block body_class %} sidebar-mini {% endblock body_class %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -89,12 +89,18 @@
                         <td>{{ timesheet.Clock_In_Time }}</td>
                         <td>{{ timesheet.Clock_Out_Time }}</td>
                         <td>
-                          {% if timesheet.Attendance_Type_Id.Attendance_Type_Name == "Half Day" %}
-                          <span class="badge badge-warning">Half Day</span>
-                          {% elif  timesheet.Attendance_Type_Id.Attendance_Type_Name == "Present" %}
-                          <span class="badge badge-success">Present</span>
+                          {% if timesheet.Clock_Out_Time is none %}
+                          <span class="badge badge-dark">No Sign out</span>
                           {% else%}
-                          <span class="badge badge-danger">Absent</span>
+                              {% if timesheet.Attendance_Type_Id.Attendance_Type_Name == "Half Day" %}
+                              <span class="badge badge-warning">Half Day</span>
+                              {% elif  timesheet.Attendance_Type_Id.Attendance_Type_Name == "Present" %}
+                              <span class="badge badge-success">Present</span>
+                              {% elif  timesheet.Attendance_Type_Id.Attendance_Type_Name == "Present (Late)" %}
+                              <span class="badge badge-primary">Present (Late)</span>
+                              {% else%}
+                              <span class="badge badge-danger"></span>
+                              {% endif %}
                           {% endif %}
                       </td>
                     </tr>

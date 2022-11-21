@@ -13,6 +13,7 @@ from django import forms
 from .forms import RoleForm_Add
 import re
 import random
+from datetime import timedelta
 
 # Create your views here.
 def index(request):
@@ -1144,6 +1145,7 @@ def Get_Assigned_Shifts(request):
                     'length':abs((item.Start_Date-item.End_Date).days),
                 }
                 )
+            print((item.Start_Date-datetime.date.today()).days)
         # print(test)
         resp['status'] = 'success'
         resp['shift_data'] = Final_Json_Data
@@ -1203,15 +1205,43 @@ def Clock_In_Clock_Out(request):
             if 'btn_clock_in_clock_out' in data:
                 btn_clock_in_clock_out = data['btn_clock_in_clock_out']
             
-            Emp = Emp_Master.objects.filter(Emp_Id=Emp_Id).first()
+            Att_Type_Code = ''
+            current_Time = datetime.datetime.now().time()
+            current_Date = datetime.date.today()
+            sift_start_time = ''
 
+            Emp = Emp_Master.objects.filter(Emp_Id=Emp_Id).first()
+            shift_details_today = Employee_Shift_Master.objects.filter(
+                Emp_Id=Emp_Id,
+                Start_Date__lte=datetime.date.today(),
+                End_Date__gte=datetime.date.today()
+                ).first()
+        
+
+            if shift_details_today == None:
+                Att_Type_Code='P'
+            else:
+                shift_start_time = shift_details_today.Shift_Id.Shift_Start_Time
+                print(shift_details_today)
+                print(shift_start_time)
+                print(current_Time)
+
+                shift_time_Minus_clockin_time = datetime.datetime.combine(datetime.date.today(), current_Time) - datetime.datetime.combine(datetime.date.today(), shift_start_time)
+                delta_hours = shift_time_Minus_clockin_time.days * 24 + shift_time_Minus_clockin_time.seconds / 3600.0
+                print('shift_time_Minus_clockin_time' + str(delta_hours))
+                
+                if delta_hours > 1:
+                    Att_Type_Code='PL'
+                else:
+                    Att_Type_Code='P'
+            print(Att_Type_Code)
             if btn_clock_in_clock_out == "Punch In":
                 
                 save_attendance = Attendance_Master(
                     Emp_Id=Emp,
-                    Attendance_Date=datetime.date.today(),
-                    Clock_In_Time = datetime.datetime.now().time(),
-                    Attendance_Type_Code = Attendance_Type.objects.filter(Attendance_Type_Code = 'P')
+                    Attendance_Date=current_Date,
+                    Clock_In_Time = current_Time,
+                    Attendance_Type_Id = Attendance_Type.objects.filter(Attendance_Type_Code = Att_Type_Code).first()
                     )
                 save_attendance.save()
                 resp['msg']=str("Attendance has been marked successfully for user: " + 
@@ -1228,10 +1258,10 @@ def Clock_In_Clock_Out(request):
                     )
 
                 print(att_Type_Code.Attendance_Type_Name)
-                Attendance_Master.objects.filter(Attendance_Id = Attendance_Id).update(
-                    Clock_Out_Time = current_time,
-                    Attendance_Type_Id=att_Type_Code
-                )
+                # Attendance_Master.objects.filter(Attendance_Id = Attendance_Id).update(
+                #     Clock_Out_Time = current_time,
+                #     Attendance_Type_Id=att_Type_Code
+                # )
                 resp['msg'] =str("Clocked out successfully for user: " +
                 Emp.First_Name + " " + Emp.Middle_Name +  " " + Emp.Last_Name)
             
@@ -1291,7 +1321,7 @@ def attendance_calender(request):
     return render(request, 'Employee/Attendance/Attendance_Calender.html',context)
 
 def Get_Calender_Details(request):
-    resp = {'Clock_In_Time': '','Clock_Out_Time': '', 'attendance_Status': ''}
+    resp = {'status':'failed', 'shift_data': ''}
     if request.method == 'GET':
         data =  request.GET
         print("------------------All Key value Pairs-------------")
@@ -1299,14 +1329,104 @@ def Get_Calender_Details(request):
             print('Key: %s' % (key) ) 
             print('Value %s' % (value) )
         print("------------------End All Key value Pairs-------------")
+        
+        # Get the data from models
         EMP = Emp_Master.objects.filter(Emp_Id =data['Emp_Id']).first()
-        print(EMP.Joining_Date)
-        attendance_mark_details = Attendance_Master.objects.filter(
-        Emp_Id=EMP
-        )
+        attendance_mark_details = Attendance_Master.objects.filter(Emp_Id=EMP)
+        #End Get the data from models
+
+        print(EMP)
+        emp_Joining_Date = EMP.Joining_Date
+        print(emp_Joining_Date)
+        
         print(attendance_mark_details)
-        for item in attendance_mark_details:
-            print(item)
+        # for item in attendance_mark_details:
+        #     print(item.Attendance_Date)
+
+        delta = datetime.datetime.now().date() - emp_Joining_Date
+        print(delta.days)
+        i=0
+        Final_Json_Data=[]
+        Already_Added_Dates=[]
+        print("start -------------------------")
+
+        bg_Color = ''   
+        for data in attendance_mark_details:
+            dt_diff = + (data.Attendance_Date-datetime.date.today()).days
+            
+            if  data.Attendance_Type_Id.Attendance_Type_Name == "Present":
+                bg_Color = 'Green'
+            elif data.Attendance_Type_Id.Attendance_Type_Name == "Present (Late)":
+                bg_Color = 'chartreuse'
+            else:
+                bg_Color = 'yellow'
+
+            print("in " + str(data.Clock_In_Time))
+            print("out  " + str(data.Clock_Out_Time))
+
+            in_time = data.Clock_In_Time
+            # To handle no outtime punch
+            if data.Clock_Out_Time is None:
+                #clock_out_hr = (data.Clock_In_Time +timedelta(minutes=30)).strftime("%H")
+                clock_out_hr = (datetime.datetime.combine(datetime.date(1,1,1),in_time) + datetime.timedelta(hours = 1)).strftime("%H")
+                clock_out_min = '0'
+                bg_Color = 'black'
+                att_tye_id_msg = "No Out Time is Punched"
+            else:
+                clock_out_hr = data.Clock_Out_Time.strftime("%H")
+                clock_out_min = data.Clock_Out_Time.strftime("%M")
+                att_tye_id_msg = data.Attendance_Type_Id.Attendance_Type_Name
+            print('clock_out_hr' + str(clock_out_hr))
+            print(str(data.Clock_In_Time.strftime("%H")))
+            Final_Json_Data.append(
+            {
+                # 'Attendance_Date' : data.Attendance_Date,
+                'Attendance_Date_Diff': dt_diff,
+
+                'Clock_In_Time_Hr': data.Clock_In_Time.strftime("%H"),
+                'Clock_In_Time_Minute': data.Clock_In_Time.strftime("%M"),
+
+                'Clock_Out_Time_Hr': clock_out_hr,
+                'Clock_Out_Time_Minute': clock_out_min,
+
+                'backgroundColor': bg_Color,
+                'allDay': False,
+
+                'Attendance_Type_Id' : att_tye_id_msg
+            }
+            )
+            Already_Added_Dates.append(dt_diff)
+
+        print('Already_Added_Dates' + str(Already_Added_Dates))
+        while i<(delta.days+1):
+            dt = emp_Joining_Date + timedelta(days = i)
+            # print("Yesterday was: ", dt)
+            dt_diff = + (dt-datetime.date.today()).days
+            if(str(dt_diff) not in str(Already_Added_Dates)):
+                Final_Json_Data.append(
+                    {
+                    # 'Attendance_Date' : dt,
+                    'Attendance_Date_Diff': dt_diff,
+                    
+                    'Clock_In_Time_Hr': "00",
+                    'Clock_In_Time_Minute': "00",
+
+                    'Clock_Out_Time_Hr': "00",
+                    'Clock_Out_Time_Minute': "00",
+
+                    'backgroundColor': 'Red',
+                    'allDay': True,
+
+                    'Attendance_Type_Id' : 'Absent'
+                    }
+                    )
+
+            i=i+1
+        
+        
+        # print(Final_Json_Data)
+        resp['status'] = 'success'
+        resp['shift_data'] = Final_Json_Data
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
 # ENd Attendance

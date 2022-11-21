@@ -3,7 +3,8 @@
 {% block title %} Tables Data {% endblock %} 
 
 <!-- Element injected in the BODY element -->
-{% block body_class %} {% endblock body_class %} 
+{% block body_class %} sidebar-mini {% endblock body_class %} 
+
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
@@ -78,7 +79,13 @@
                         <h5 class="widget-user-desc text-right">{{employee.Desg_Id}}</h5>
                       </div>
                       <div class="widget-user-image">
-                        <img class="img-circle" src="/static/assets_New/img/user3-128x128.jpg" alt="User Avatar">
+                        <img class="img-circle"  alt="User Avatar"
+                        {% if employee.Emp_Sex and employee.Emp_Sex == "Male" %}
+                        src="/static/dist/img/Male.jpg" 
+                        {% elif employee.Emp_Sex and employee.Emp_Sex == "Female" %}
+                        src="/static/dist/img/Female.jpg" 
+                        {% endif %}
+                        >
                       </div>
                       <div class="card-footer">
                         <div class="row">
@@ -139,7 +146,7 @@
                             </div>       
                         </div>
 
-                        <div class="col-7">
+                        <div class="col-5">
                           <div class="form-group">
                             <label for="Email_ID">Email address</label>
                             <input type="email" name="Email_ID" class="form-control"  placeholder="Enter email"
@@ -148,18 +155,18 @@
                           </div>
                         </div>
 
-                        <div class="col-5">
-                          <div class="form-group clearfix">
-                              <label for="Last_Name">Gender</label><br>
-                              <div class="icheck-primary d-inline">
-                                <input value="Male" type="radio" id="radioPrimary1" name="Emp_Sex" 
+                        <div class="col-4">
+                          <div class="form-group clearfix mb-1"  >
+                            <label for="Last_Name">Gender</label><br>
+                              <div class="icheck-primary d-inline ">
+                                <input  value="Male" type="radio" id="radioPrimary1" name="Emp_Sex" 
                                 {% if employee.Emp_Sex and employee.Emp_Sex == "Male" %}checked {%endif%}
                                 {% if details != '' %} disabled {% endif%}>
                                 <label for="radioPrimary1">
                                   Male 
                                 </label>
                               </div>
-                              <div class="icheck-primary d-inline">
+                              <div class="icheck-primary d-inline px-1">
                                 <input value="Female" type="radio" id="radioPrimary2" name="Emp_Sex"
                                 {% if employee.Emp_Sex and employee.Emp_Sex == "Female" %}checked {%endif%}
                                 {% if details != '' %} disabled {% endif%}>
@@ -167,7 +174,7 @@
                                   Female
                                 </label>
                               </div>
-                              <div class="icheck-primary d-inline">
+                              <div class="icheck-primary d-inline px-1">
                                 <input value="Other" type="radio" id="radioPrimary3" name="Emp_Sex"
                                 {% if employee.Emp_Sex and employee.Emp_Sex == "Other" %}checked {%endif%}
                                 {% if details != '' %} disabled {% endif%}>
@@ -177,6 +184,20 @@
                               </div>
                           </div>
                       </div>
+                      
+                        <div class="col-2" >
+                          <div class="form-group">
+                            <label for="Emp_Status">Status</label>
+                            <div class="switchToggle" >
+                                <input type="checkbox" class="form-control" name="Emp_Status" id="switch"
+                                {% if employee.Emp_Status == True %}
+                                  checked
+                                  {% endif %}
+                                {% if details != '' %} disabled {% endif%}>
+                                <label for="switch">Toggle</label>
+                            </div>
+                        </div>
+                        </div>
 
                         <div class="col-4">
                           <!-- phone mask -->

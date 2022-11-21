@@ -51,3 +51,33 @@ values
 ('Present (Late)','PL','If Emloyee mark the attendance after 30 minutes of clock in time',date('now'),date('now')),
 ('Half Day','A','If Emloyee only complete 4 Hrs. of shift',date('now'),date('now'))
 ;
+
+
+// insert nd update calender values
+insert into Employee_App_attendance_master
+(
+Attendance_Date,
+Clock_In_Time ,
+Clock_Out_Time ,
+Emp_Id_id,
+Attendance_Type_Id_id,
+Created_Date,
+Modified_Date
+)
+values
+(
+"2022-11-10",
+"07:00:00.336923",
+"12:00:00.757869",
+1,1,datetime('now'),datetime('now')
+ )
+
+
+update Employee_App_attendance_master
+set 	
+-- Clock_In_Time = "08:00:00.336923",
+-- Clock_Out_Time = "18:00:00.757869",
+--Attendance_Date="2022-11-15"
+Attendance_Type_Id_id = 4
+
+where Attendance_Id =5
