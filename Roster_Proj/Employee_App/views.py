@@ -16,8 +16,9 @@ import random
 from datetime import timedelta
 
 # Create your views here.
-def index(request):
-    return render(request,'Pages\index.html')
+def login(request):
+    return render(request,'Accounts/login.html')
+
 
 def home(request):
     emps=Emp_Master.objects.all()

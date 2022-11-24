@@ -19,6 +19,9 @@ Models Migrations:
 python manage.py makemigrations
 python manage.py migrate 
 
+//Admin Credentials
+id: codestack
+pw: CodeStack@123
 DB Queries
 --To get all the tables name
 Select * from SQLite_master
