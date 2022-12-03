@@ -84,6 +84,7 @@
 
                 <div hidden>
                   <input type="text" id="Attendance_Id" name="Attendance_Id">
+                  <input type="text" id="Emp_Shift_Id" name="Emp_Shift_Id">
                 </div>
 
                 <div class="col-4">
@@ -100,7 +101,7 @@
                       <div class="form-group">
                           <label>Shift Start Time</label>
                             <div class="input-group date" id="reservationdate">
-                              <input id="Shift_Start_Time" type="text" class="form-control" disabled>
+                              <input id="Shift_Start_Time"   type="text" class="form-control" readonly>
                             </div>
                           </div>
                       </div>
@@ -109,7 +110,7 @@
                         <div class="form-group">
                             <label>Shift End Time</label>
                               <div class="input-group date" id="reservationdate">
-                                <input id="Shift_End_Time" type="text" class="form-control" disabled>
+                                <input id="Shift_End_Time" type="text" class="form-control" readonly>
                               </div>
                             </div>
                         </div>
@@ -179,7 +180,7 @@
                           <span class="badge badge-warning">Half Day</span>
                           {% elif  timesheet.Attendance_Type_Id.Attendance_Type_Name == "Present" %}
                           <span class="badge badge-success">Present</span>
-                          {% else%}
+                          {% else %}
                           <span class="badge badge-danger">Absent</span>
                           {% endif %}
                       </td>
@@ -274,13 +275,20 @@
             success: function(data) {
               $("#card_footer_mark_attendance").css("display", "block");
               console.log('att id:' + data.attendance_Status)
-              if(data.attendance_Status == false)
+              if(data.attendance_Status == "No Shift")
               {
-                $("#btn_punch_in_punch_out").addClass('btn float-right ml-2 btn btn-success').text("Punch In")
+                $("#btn_punch_in_punch_out").attr('disabled','disabled').addClass('btn float-right ml-2 btn btn-info')
+                .text("No Shift is Mapped to user");
               }
               else if(data.attendance_Status == "Marked Clock In")
               {
-                $("#btn_punch_in_punch_out").addClass('btn float-right ml-2 btn btn-danger').text("Punch Out")
+                $("#btn_punch_in_punch_out").removeAttr('disabled').removeClass('btn-success btn-info')
+                .addClass('btn float-right ml-2 btn btn-danger').text("Punch Out")
+              }
+              else if(data.attendance_Status == false)
+              {
+                $("#btn_punch_in_punch_out").removeAttr('disabled').removeClass('btn-danger btn-info')
+                .addClass('btn float-right ml-2 btn btn-success').text("Punch In")
               }
               else
               {
@@ -291,7 +299,7 @@
               $("#Shift_Start_Time").val(data.Shift_Start_Time)
               $("#Shift_End_Time").val(data.Shift_End_Time)
               $("#Attendance_Id").val(data.Attendance_Id)
-
+              $("#Emp_Shift_Id").val(data.Emp_Shift_Id)
               console.log(data.Shift_Start_Time)
               console.log(data.Shift_End_Time)
             }

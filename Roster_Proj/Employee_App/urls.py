@@ -38,6 +38,7 @@ urlpatterns = [
     # # Employee Urls
     path('employee', views.employee, name="employee"),
     path('employee/manage', views.manage_emp, name="employee/manage"),
+    path('Get_Designation_EMP', views.Get_Designation_EMP, name="Get_Designation_EMP"),
     path('employee/delete', views.delete_emp, name="employee/delete"),
     path('employee/save_emp', views.save_emp,name="save_emp"),
     # # End Employee Urls
@@ -55,6 +56,7 @@ urlpatterns = [
     path('shift/assign/manage', views.manage_assign_shift, name="shift/assign/manage"),
     path('shift/assign/delete', views.delete_assign_shift, name="shift/assign/delete"),
     path('shift/assign/save_assign_shift', views.save_assign_shift, name="save_assign_shift"),
+    path('Get_Assign_Shifts_Time', views.Get_Assign_Shifts_Time, name="Get_Assign_Shifts_Time"),
     # End Shift Assignment
 
     # Shift Calender

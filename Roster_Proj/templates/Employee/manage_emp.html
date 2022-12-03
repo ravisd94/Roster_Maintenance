@@ -248,7 +248,7 @@
                           <div class="col-4">
                             <div class="form-group">
                               <label for="Dept_Id">Department</label>
-                              <select name="Dept_Id"  class="form-control select2bs4" style="width: 100%;"
+                              <select name="Dept_Id" id="Dept_Id"  class="form-control select2bs4" style="width: 100%;"
                                   {% if details != '' %} disabled {% endif%} >
                                   {% if not employee.Dept_Id %}
                                   <option value="0" disabled selected>Please Select Department</option>
@@ -256,7 +256,7 @@
                                   <option value="0" disabled>Please Select Department</option>
                                   {% endif %}
                                   {% for department in departments %}
-                                      {% if employee.Dept_Id and employee.Dept_Id == department.Dept_Id %}
+                                      {% if employee.Dept_Id and employee.Dept_Id == department %}
                                       <option value="{{ department.Dept_Id }}" selected>{{ department.Dept_Name }}</option>
                                       {% else %}
                                       <option value="{{ department.Dept_Id }}">{{ department.Dept_Name }}</option>
@@ -269,20 +269,21 @@
                           <div class="col-4">
                             <div class="form-group">
                               <label for="Desg_Id">Designation</label>
-                              <select name="Desg_Id" class="form-control select2bs4" style="width: 100%;"
-                                {% if details != '' %} disabled {% endif%}>
-                                {% if not employee.Desg_Id %}
-                                <option value="0" disabled selected>Please Select Designation</option>
-                                {% else %}
-                                <option value="0" disabled>Please Select Designation</option>
-                                {% endif %}
-                                {% for designation in designations %}
-                                    {% if employee.Desg_Id and employee.Desg_Id == designation.Desg_Id %}
+                              <select name="Desg_Id" id ="Desg_Id" class="form-control select2bs4" style="width: 100%;"
+                                {% comment %} {% if %} {% endcomment %}
+                                  {% if details != '' %} disabled {% endif%}>
+                                  {% if not employee.Desg_Id %}
+                                  <option value="0" disabled selected>Please Select Designation</option>
+                                  {% else %}
+                                  <option value="0" disabled>Please Select Designation</option>
+                                  {% endif %}
+                                  {% for designation in designations %}
+                                    {% if employee.Desg_Id and employee.Desg_Id == designation%}
                                     <option value="{{ designation.Desg_Id }}" selected>{{ designation.Desg_Name }}</option>
                                     {% else %}
                                     <option value="{{ designation.Desg_Id }}">{{ designation.Desg_Name }}</option>
                                     {% endif %}
-                                {% endfor %}
+                                  {% endfor %}
                               </select>
                             </div>
                           </div>
@@ -352,13 +353,13 @@
                 <!-- /.card-body -->
                 <div class="card-footer">
                   {% if details != '' %}
-                    <a href='' class="btn btn-warning ">Back</a>
+                    <a href="/employee"  class="btn btn-warning ">Back</a>
                     <a href="manage?id={{employee.Emp_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
                   {% else %}
                       <button type="submit" class="btn btn-success float-right ml-2">
                         {% if request.GET.id is None %} Submit {% else %} Update {% endif%}
                       </button>
-                      <a class="btn btn-danger float-right ml-2">Cancel</a>
+                      <a href="/employee" class="btn btn-danger float-right ml-2">Cancel</a>
                   {% endif%}
                   
                 </div>
@@ -567,6 +568,42 @@
   });
 </script>
 
+<script>
+  $("#Dept_Id").change(function(e) {
+    alert($('option:selected', this).text());
+    e.preventDefault();
+    console.log(e);
+
+    var dept = $("#department");
+    var desg = $("#Desg_Id");
+    desg.empty().append('<option value="0" disabled selected>Please Select Designation</option>')
+    var dataString = $(this).serialize();
+    $.ajax({
+        type: 'GET',
+        url: "{% url 'Get_Designation_EMP' %}",
+        data: dataString,
+        success: function(data) 
+        {
+          if (data.status == 'failed') 
+          {
+            alert('data for designation not found');
+          }
+          else
+          {
+            $.each(data.designations, function(key, value) 
+            {
+            optionText = key;
+            optionValue = value;
+            console.log('key '+ key + ' value '+value)
+            var opts = '<option value="' + value.Desg_Id + '">' + value.Desg_Name + '</option>';
+            console.log(opts)
+            desg.append(opts);
+            });
+          }
+        }
+      })
+    });
+</script>
 {% comment %} Ajax POST {% endcomment %}
 
 

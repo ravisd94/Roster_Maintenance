@@ -10,3 +10,4 @@
 .switchToggle input:checked + label:after, .switchToggle input:checked + input + label:after {left: calc(100% - 2px); transform: translateX(-100%); }
 .switchToggle label:active:after {width: 60px; } 
 .toggle-switchArea { margin: 10px 0 10px 0; }
+.NewContentHeader { padding-top: 5px; }

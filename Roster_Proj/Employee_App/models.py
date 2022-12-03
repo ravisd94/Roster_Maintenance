@@ -8,8 +8,8 @@ from django.utils import timezone
 
 class Dept_Master(models.Model):
     Dept_Id=models.AutoField(primary_key=True)
-    Dept_Name=models.TextField(unique = True) 
-    Dept_description = models.TextField() 
+    Dept_Name=models.CharField(max_length=100, unique = True) 
+    Dept_description = models.TextField(null=True,blank=True)
     Dept_Status=models.BooleanField(default=True)
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
@@ -26,9 +26,10 @@ class Dept_Master(models.Model):
 
 class Designation_Master(models.Model):
     Desg_Id=models.AutoField(primary_key=True)
-    Desg_Name=models.TextField(unique = True) 
-    Desg_description = models.TextField() 
+    Desg_Name=models.CharField(max_length=100, blank=True,unique = True) 
+    Desg_description = models.TextField(null=True,blank=True)
     Desg_Status=models.BooleanField(default=True)
+    Dept_Id = models.ForeignKey(Dept_Master, on_delete=models.CASCADE)
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
     Modified_By=models.IntegerField(null=True,blank=True)
@@ -44,8 +45,8 @@ class Designation_Master(models.Model):
             
 class Role_Master(models.Model):
     Role_Id=models.AutoField(primary_key=True)
-    Role_Name=models.TextField(unique = True) 
-    Role_description = models.TextField() 
+    Role_Name=models.CharField(max_length=100, blank=True, unique = True) 
+    Role_description = models.TextField(null=True,blank=True) 
     Role_Status=models.BooleanField(default=True)
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
@@ -62,11 +63,11 @@ class Role_Master(models.Model):
 
 class Project_Master(models.Model):
     Proj_id = models.AutoField(primary_key=True)
-    Proj_Name=models.TextField() 
-    Proj_Description=models.TextField() 
-    Client_Name =models.TextField() 
-    Point_of_Contact_Name=models.TextField() 
-    Point_of_Contact_Email=models.TextField() 
+    Proj_Name=models.CharField(max_length=100, blank=True, unique = True)
+    Proj_Description=models.TextField(null=True,blank=True)
+    Client_Name =models.CharField(max_length=100, blank=True)
+    Point_of_Contact_Name=models.CharField(max_length=100, blank=True)
+    Point_of_Contact_Email=models.CharField(max_length=100, blank=True, unique = True)
     Proj_Start_Date=models.DateField(blank=True)
     Proj_End_Date=models.DateField(blank=True)
     Created_By=models.IntegerField(null=True,blank=True)
@@ -85,17 +86,17 @@ class Project_Master(models.Model):
 
 class Emp_Master(models.Model):
     Emp_Id=models.AutoField(primary_key=True)
-    Email_ID=models.TextField(unique = True) 
-    First_Name=models.TextField() 
-    Middle_Name=models.TextField(blank=True)
-    Last_Name=models.TextField()
+    Email_ID=models.CharField(max_length=200, blank=True, unique = True) 
+    First_Name=models.CharField(max_length=100, blank=True)
+    Middle_Name=models.CharField(max_length=100, blank=True)
+    Last_Name=models.CharField(max_length=100, blank=True)
     Contact_Number= models.CharField(max_length=10, blank=True) 
     Joining_Date=models.DateField(blank=True)
     Dept_Id = models.ForeignKey(Dept_Master, on_delete=models.CASCADE)
     Desg_Id = models.ForeignKey(Designation_Master, on_delete=models.CASCADE)
     Role_Id=models.ForeignKey(Role_Master, on_delete=models.CASCADE)
     Project_Id=models.IntegerField(blank=True,null=True)
-    Emp_Sex=models.TextField(blank=True)
+    Emp_Sex=models.CharField(max_length=100, blank=True)
     Birth_Date=models.DateField(blank=True)
     Emp_Status=models.BooleanField(default=True)
     Created_By=models.IntegerField(null=True,blank=True)
@@ -113,7 +114,7 @@ class Emp_Master(models.Model):
         
 class Shift_Master(models.Model):
     Shift_Id=models.AutoField(primary_key=True)
-    Shift_Name=models.CharField(max_length=100)
+    Shift_Name=models.CharField(max_length=100, unique = True)
     Shift_Start_Time=models.TimeField()
     Shift_End_Time=models.TimeField()
     Created_By=models.IntegerField(null=True,blank=True)
@@ -135,6 +136,8 @@ class Employee_Shift_Master(models.Model):
     Shift_Id=models.ForeignKey(Shift_Master, on_delete=models.CASCADE)
     Start_Date=models.DateField()
     End_Date=models.DateField()
+    Shift_Start_Time=models.TimeField()
+    Shift_End_Time=models.TimeField()
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
     Modified_By=models.IntegerField(null=True,blank=True)
@@ -155,8 +158,9 @@ class Attendance_Type(models.Model):
 
 class Attendance_Master(models.Model):
     Attendance_Id=models.AutoField(primary_key=True)
-    Attendance_Type_Id=models.ForeignKey(Attendance_Type, on_delete=models.CASCADE,null=True, blank=True)
+    Attendance_Type_Id=models.ForeignKey(Attendance_Type, on_delete=models.CASCADE)
     Emp_Id=models.ForeignKey(Emp_Master, on_delete=models.CASCADE)
+    Emp_Shift_Id=models.ForeignKey(Employee_Shift_Master, on_delete=models.CASCADE)
     Attendance_Date=models.DateField()
     Clock_In_Time=models.TimeField(null=True,blank=True)
     Clock_Out_Time=models.TimeField(null=True,blank=True)
@@ -181,12 +185,7 @@ class Attendance_Master(models.Model):
     def attendance_code(t):
         print('here')
         print(t)
-        # print(clock_out)
-        # if(clock_in != '' and clock_out != ''):
-        # diff_clock = clock_out - clock_in
-        # diff_clock = datetime.combine(date.today(), clock_out) - datetime.combine(date.today(), clock_in)
-        # diff_clock = datetime.time(clock_out) - datetime.time(clock_in)
-        # print(diff_clock.total_seconds() / (60 * 60))
+
         delta_hours = t.days * 24 + t.seconds / 3600.0
         print(delta_hours)
         if delta_hours < 4:

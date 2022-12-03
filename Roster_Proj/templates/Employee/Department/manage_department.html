@@ -31,15 +31,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
-        {% comment %} <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div> {% endcomment %}
         <div class="row mb-1">
           <div class="col-md-6">
             <h1><b>{{card_header}} </b></h1>
           </div>
         </div>
+        
         {% if details == '' %}
             <div  id="validation_box" style="display: none;"  class="col-md-12 alert ">
               <h5></h5>
@@ -146,13 +143,13 @@
                 <!-- /.card-body -->
                 <div class="card-footer">
                   {% if details != '' %}
-                    <a href='' class="btn btn-warning ">Back</a>
+                    <a href='/department' class="btn btn-warning ">Back</a>
                     <a href="manage?id={{department.Dept_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
                   {% else %}
                       <button type="submit" class="btn btn-success float-right ml-2">
                         {% if request.GET.id is None %} Submit {% else %} Update {% endif%}
                       </button>
-                      <a class="btn btn-danger float-right ml-2">Cancel</a>
+                      <a href='/department' class="btn btn-danger float-right ml-2">Cancel</a>
                   {% endif%}
                   
                 </div>

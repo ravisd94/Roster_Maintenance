@@ -78,23 +78,37 @@
                         {% for shift in shifts %}
                         <th>{{ shift.Shift_Id }}</th>
                         <td>{{ shift.Shift_Name }}</td>
-                        <td>{{ shift.Shift_Start_Time }}</td>
-                        <td>{{ shift.Shift_End_Time }}</td>
                         <td>
+                        {% if shift.Shift_Name == "Custom"%}
+                        <span class="badge badge-info">Custom Start Time</span>
+                        {% else %}
+                          {{ shift.Shift_Start_Time }}
+                        {% endif %}
+                        </td>
+                        <td>
+                          {% if shift.Shift_Name == "Custom"%}
+                          <span class="badge badge-info">Custom End Time</span>
+                          {% else %}
+                          {{ shift.Shift_End_Time }}
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if shift.Shift_Name != "Custom"%}
                             <a href="shift/manage?details={{shift.Shift_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
                             <a href="shift/manage?id={{shift.Shift_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
-                            <a href="/"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
+                            <a href="shift/delete?id={{shift.Shift_Id }}"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
+                          {% endif %}
                         </td>
                     </tr>
                         {% endfor %}
                   </tbody>
                   <tfoot>
                   <tr>
-                    <th>Rendering engine</th>
-                    <th>Rendering engine</th>
-                    <th>Browser</th>
-                    <th>Platform(s)</th>
-                    <th>Engine version</th>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Action</th>
                   </tr>
                   </tfoot>
                 </table>

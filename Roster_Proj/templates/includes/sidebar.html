@@ -78,19 +78,19 @@
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="{% url 'department' %}" class="nav-link {% if 'layout-top' in segment %} active {% endif %}">
-                  <i class="far fa fa-building nav-icon"></i>
+                  <i class="far fa fa-sitemap nav-icon"></i>
                   <p>Department Master</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'designation' %}" class="nav-link {% if 'layout-fixed-sidebar' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="far fa-id-badge nav-icon"></i>
                   <p>Designation</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'role' %}" class="nav-link {% if 'layout-fixed-topnav' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="far fa fa-universal-access nav-icon"></i>
                   <p>Role</p>
                 </a>
               </li>
@@ -98,7 +98,7 @@
           </li>
           <li class="nav-item has-treeview {% if 'charts' in segment %} menu-open {% endif %}">
             <a href="{% url 'employee' %}" class="nav-link {% if 'charts' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-person"></i>
+              <i class="nav-icon fas fa-users"></i>
               <p>
                 Employee
               </p>

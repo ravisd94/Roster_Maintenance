@@ -26,17 +26,24 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
-        <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div>
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><b>Designation</b></h1>
-          </div>
-          <div class="col-sm-6">
-            <a href="{% url 'designation/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Designation</a>
-            {% comment %} <button class=" float-md-right">Add New Designation</button> {% endcomment %}
+        <div class="card">
+          <div class="card-header ">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1><b>Designation</b></h1>
+              </div>
+              <div class="col-sm-6">
+                <a href="{% url 'designation/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Designation</a>
+                {% comment %} <button class=" float-md-right">Add New Designation</button> {% endcomment %}
+              </div>
+              <div class="col-12">
+              <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a>
+              <a><i title="View" class="far fa fa-chevron-right nav-icon px-1"></i></a>
+              <a href=""><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
+              <a><i title="View" class="far fa fa-chevron-right nav-icon px-1"></i></a>
+              <a href="/"><i title="View" class="far fa fa-sitemap nav-icon px-1"></i> Department</a>
+              </div>
+            </div>
           </div>
         </div>
         {% for message  in messages %}
@@ -67,6 +74,7 @@
                   <thead>
                   <tr>
                     <th>Id</th>
+                    <th>Department</th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Status</th>
@@ -77,6 +85,7 @@
                     <tr>
                         {% for designation in designations %}
                         <th>{{ designation.Desg_Id }}</th>
+                        <th>{{ designation.Dept_Id }}</th>
                         <td>{{ designation.Desg_Name }}</td>
                         <td>{{ designation.Desg_description }}</td>
                         <td>
@@ -89,18 +98,19 @@
                         <td>
                             <a href="designation/manage?details={{designation.Desg_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
                             <a href="designation/manage?id={{designation.Desg_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
-                            <a href="/"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
+                            <a href="designation/delete?id={{designation.Desg_Id }}"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
                         </td>
                     </tr>
                         {% endfor %}
                   </tbody>
                   <tfoot>
                   <tr>
-                    <th>Rendering engine</th>
-                    <th>Rendering engine</th>
-                    <th>Browser</th>
-                    <th>Platform(s)</th>
-                    <th>Engine version</th>
+                    <th>Id</th>
+                    <th>Department</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                   </tfoot>
                 </table>

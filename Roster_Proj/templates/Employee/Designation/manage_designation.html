@@ -62,7 +62,7 @@
                 <div class="card-body">
                     <div class="row">
                       {% if details != '' or request.GET.id is not None %}
-                      <div class="col-4">
+                      <div class="col-2">
                         <div class="form-group">
                             <label for="Desg_Id">Designation Id</label>
                             <input type="text" name="Desg_Id" class="form-control"
@@ -71,6 +71,28 @@
                         </div>       
                       </div>
                       {% endif%}
+                      <div class="col-4">
+                        <div class="form-group">
+                          <label for="Dept_Id">Department</label>
+                          <select name="Dept_Id"  class="form-control select2bs4" style="width: 100%;"
+                              {% if details != '' %} disabled {% endif%} >
+                              {% if not designation.Dept_Id %}
+                              <option value="0" disabled selected>Please Select Department</option>
+                              {% else %}
+                              <option value="0" disabled>Please Select Department</option>
+                              {% endif %}
+                              {% for department in departments %}
+                                  {% if designation.Dept_Id and designation.Dept_Id == department%}
+                                  <option value="{{ department.Dept_Id }}" selected>{{ department.Dept_Name }}</option>
+                                  {% else %}
+                                  <option value="{{ department.Dept_Id }}">{{ department.Dept_Name }}</option>
+                                  {% endif %}
+                              {% endfor %}
+                              {% comment %} <option value="{{ designation.Dept_Id }}" selected>{{ designation.Dept_Id.Dept_Name }}</option> {% endcomment %}
+                          </select>
+                        </div>
+                      </div>
+
                       <div class="col-4">
                             <div class="form-group">
                                 <label for="Desg_Name">Designation Name</label>
@@ -96,7 +118,7 @@
                             </div>
                       </div>
 
-                      <div class="col-4">
+                      <div class="col-6">
                             <div class="form-group">
                                 <label for="Desg_description">Designation Description</label>
                                 <textarea  class="form-control" name="Desg_description" 
@@ -147,13 +169,13 @@
                 <!-- /.card-body -->
                 <div class="card-footer">
                   {% if details != '' %}
-                    <a href='' class="btn btn-warning ">Back</a>
+                    <a href="/designation" class="btn btn-warning ">Back</a>
                     <a href="manage?id={{designation.Desg_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
                   {% else %}
                       <button type="submit" class="btn btn-success float-right ml-2">
                         {% if request.GET.id is None %} Submit {% else %} Update {% endif%}
                       </button>
-                      <a class="btn btn-danger float-right ml-2">Cancel</a>
+                      <a href="/designation" class="btn btn-danger float-right ml-2">Cancel</a>
                   {% endif%}
                   
                 </div>

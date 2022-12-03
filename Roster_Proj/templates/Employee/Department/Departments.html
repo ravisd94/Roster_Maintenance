@@ -16,27 +16,33 @@
   <link rel="stylesheet" href="/static/assets_New/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/static/assets_New/css/adminlte.min.css">
-
 {% endblock stylesheets %}
 
 {% block content %} 
 
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+  <div class="content-wrapper ">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div>
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><b>Department</b></h1>
-          </div>
-          <div class="col-sm-6">
-            <a href="{% url 'department/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Department</a>
-            {% comment %} <button class=" float-md-right">Add New Department</button> {% endcomment %}
+    <section class="NewContentHeader" >
+      <div class="container-fluid ">
+        <div class="card">
+          <div class="card-header ">
+            <div class="row ">
+              <div class="col-sm-6 col-6">
+                <h3><b>Department</b></h3>
+              </div>
+              <div class="col-sm-6 col-6">
+                <a href="{% url 'department/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Department</a>
+                {% comment %} <button class=" float-md-right">Add New Department</button> {% endcomment %}
+              </div>
+              <div class="col-12">
+                <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a>
+                <a><i title="View" class="far fa fa-chevron-right nav-icon px-1"></i></a>
+                <a href=""><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
+                <a><i title="View" class="far fa fa-chevron-right nav-icon px-1"></i></a>
+                <a href="/"><i title="View" class="far fa fa-sitemap nav-icon px-1"></i> Department</a>
+            </div>
+            </div>
           </div>
         </div>
         {% for message  in messages %}
@@ -96,11 +102,11 @@
                   </tbody>
                   <tfoot>
                   <tr>
-                    <th>Rendering engine</th>
-                    <th>Rendering engine</th>
-                    <th>Browser</th>
-                    <th>Platform(s)</th>
-                    <th>Engine version</th>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                   </tfoot>
                 </table>

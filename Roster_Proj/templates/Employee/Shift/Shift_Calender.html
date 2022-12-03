@@ -256,7 +256,7 @@
 
                 var i =0;
                 var shift_colors={};
-                var colors = ['red','green','blue','yellow'];
+                var colors = ['red','green','blue','yellow','orange'];
                 $("#ul_shifts").empty();
 
                 $.each(data.shifts, function (key, value) {
@@ -267,7 +267,7 @@
                     i++;
                 });
                 $.each(shift_colors, function (key, value) {
-                  console.log('Shifts color test' + key + ' ' +value);
+                  //console.log('Shifts color test ' + key + ' and ' +value + ' value.title ' +value.title);
                   });
                 Assign_Shift_Data_JSON=[];
                 $.each(data.shift_data, function (key, value) {

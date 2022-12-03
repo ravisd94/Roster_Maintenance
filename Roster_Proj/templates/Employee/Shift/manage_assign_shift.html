@@ -67,10 +67,10 @@
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          <div {% if request.GET.id is not None or  details != '' %} class="col-9" {% else %} class="col-12"  {% endif%}>
+          <div class="col-12"  >
             <!-- /.card -->
             <div class="card">
-              <form id="employee-form">
+              <form id="assign_shift-form">
                 {% csrf_token %}
                 <div class="card-body">
                   <div class="row">
@@ -97,7 +97,7 @@
                             <option value="0" disabled>Please Select Employee</option>
                             {% endif %}
                             {% for employee in employees %}
-                                {% if assign_shift.Emp_Id and assign_shift.Emp_Id == employee.Emp_Id %}
+                                {% if assign_shift.Emp_Id and assign_shift.Emp_Id == employee %}
                                 <option value="{{ employee.Emp_Id }}" selected>{{ employee.Email_ID }}</option>
                                 {% else %}
                                 <option value="{{ employee.Emp_Id }}">{{ employee.Email_ID }}</option>
@@ -107,10 +107,10 @@
                       </div>
                     </div>
 
-                    <div class="col-5">
+                    <div class="col-4">
                       <div class="form-group">
                         <label for="Shift_Id">Shift</label>
-                        <select name="Shift_Id" class="form-control select2bs4" style="width: 100%;"
+                        <select name="Shift_Id" id="Shift_Id" class="form-control select2bs4" style="width: 100%;"
                             {% if details != '' %} disabled {% endif%} >
                             {% if not assign_shift.Shift_Id %}
                             <option value="0" disabled selected>Please Select Shift</option>
@@ -118,19 +118,49 @@
                             <option value="0" disabled>Please Select Shift</option>
                             {% endif %}
                             {% for shift in shifts %}
-                                {% if assign_shift.Shift_Id and assign_shift.Shift_Id == shift.Emp_Id %}
+                                {% if assign_shift.Shift_Id and assign_shift.Shift_Id == shift %}
                                 <option value="{{ shift.Shift_Id }}" selected>
+                                  {% if shift.Shift_Name == "Custom"%} 
+                                    {{ shift.Shift_Name }}
+                                  {% else %}
                                     {{ shift.Shift_Name }} - {{shift.Shift_Start_Time| time:"H:i"}} : {{shift.Shift_End_Time| time:"H:i"}}
+                                  {% endif %}
                                 </option>
                                 {% else %}
                                 <option value="{{ shift.Shift_Id }}">
+                                  {% if shift.Shift_Name == "Custom"%} 
+                                    {{ shift.Shift_Name }}
+                                  {% else %}
                                     {{ shift.Shift_Name }} - {{shift.Shift_Start_Time| time:"H:i"}} : {{shift.Shift_End_Time| time:"H:i"}}
-                                </option>
+                                  {% endif %}
+                                  </option>
                                 {% endif %}
                             {% endfor %}
                         </select>
                       </div>
                     </div>
+                    
+                    <div class="col-md-2 col-sm-4">
+                      <div class="form-group">
+                          <label for="Shift_Start_Time">Start Time</label>
+                          <input type="time" name="Shift_Start_Time" id="Shift_Start_Time" class="form-control datetimepicker-input" 
+                          {% if details != '' or id != '' %} 
+                            value="{{assign_shift.Shift_Start_Time| time:"H:i" }}" 
+                          {% endif%}
+                          {% if details != '' or assign_shift.Shift_Id_id != 1 %} readonly {% endif%}>
+                      </div>       
+                  </div>
+
+                  <div class="col-md-2 col-sm-4">
+                      <div class="form-group">
+                          <label for="Shift_End_Time">End Time</label>
+                          <input type="time" name="Shift_End_Time" id="Shift_End_Time" class="form-control datetimepicker-input"
+                          {% if details != '' or id != '' %} 
+                            value="{{assign_shift.Shift_End_Time| time:"H:i" }}" 
+                          {% endif%}
+                          {% if details != '' or assign_shift.Shift_Id_id != 1 %} readonly {% endif%}>
+                      </div>       
+                  </div>
 
                     <div class="col-4">
                         <div class="form-group">
@@ -163,7 +193,7 @@
                             <div class="form-group">
                                 <label for="Created_By">Created By</label>
                                 <input type="text" name="Created_By" class="form-control"
-                                    value='{% if employee.Created_By %}{{employee.Created_By}}{% endif %}'
+                                    value='{% if assign_shift.Created_By %}{{assign_shift.Created_By}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>       
                         </div>
@@ -171,7 +201,7 @@
                             <div class="form-group">
                                 <label for="Created_Date">Created Date</label>
                                 <input type="text" name="Created_Date" class="form-control"
-                                    value='{% if employee.Created_Date %}{{employee.Created_Date}}{% endif %}'
+                                    value='{% if assign_shift.Created_Date %}{{assign_shift.Created_Date}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>  
                         </div>
@@ -179,7 +209,7 @@
                             <div class="form-group">
                                 <label for="Modified_By">Last Modified By</label>
                                 <input type="text" name="Modified_By" class="form-control" 
-                                    value='{% if employee.Modified_By %}{{employee.Modified_By}}{% endif %}'
+                                    value='{% if assign_shift.Modified_By %}{{assign_shift.Modified_By}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>  
                         </div>
@@ -187,7 +217,7 @@
                             <div class="form-group">
                                 <label for="Modified_Date">Last Modified Date</label>
                                 <input type="email" name="Modified_Date" class="form-control"
-                                    value='{% if employee.Modified_Date %}{{employee.Modified_Date}}{% endif %}'
+                                    value='{% if assign_shift.Modified_Date %}{{assign_shift.Modified_Date}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>  
                         </div>
@@ -198,13 +228,13 @@
                 <!-- /.card-body -->
                 <div class="card-footer">
                   {% if details != '' %}
-                    <a href='' class="btn btn-warning ">Back</a>
-                    <a href="manage?id={{employee.Emp_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
+                    <a href='/shift/assign' class="btn btn-warning ">Back</a>
+                    <a href="manage?id={{ assign_shift.Emp_Shift_Id }}"  class="btn btn-primary  float-right ml-2">Edit</a>
                   {% else %}
                       <button type="submit" class="btn btn-success float-right ml-2">
                         {% if request.GET.id is None %} Submit {% else %} Update {% endif%}
                       </button>
-                      <a class="btn btn-danger float-right ml-2">Cancel</a>
+                      <a href='/shift/assign' class="btn btn-danger float-right ml-2">Cancel</a>
                   {% endif%}
                   
                 </div>
@@ -257,7 +287,7 @@
   {% comment %} Validations {% endcomment %}
 <script>
   $(function () {    
-    $('#employee-form').validate({
+    $('#assign_shift-form').validate({
       rules: {
         Email_ID: {
           required: true,
@@ -371,8 +401,9 @@
   })
 </script>
 
+{% comment %} Data Submission {% endcomment %}
 <script>
-  $(document).on("submit","#employee-form",function(e){
+  $(document).on("submit","#assign_shift-form",function(e){
     e.preventDefault();
   var dataString = $(this).serialize();
   $("#validation_box").css('display', 'block');
@@ -412,6 +443,42 @@
   })
   });
 </script>
+
+<script>
+  $("#Shift_Id").change(function(e) {
+    alert($('option:selected', this).text());
+    e.preventDefault();
+    console.log($('#Shift_Id :selected').text())
+    var dataString = $(this).serialize();
+    if($('#Shift_Id :selected').text().trim() == "Custom")
+    {
+      console.log("true");
+      $("#Shift_Start_Time").val('').removeAttr("readonly");
+      $("#Shift_End_Time").val('').removeAttr("readonly");
+    }
+    else
+    {
+      $.ajax({
+        type: 'GET',
+        url: "{% url 'Get_Assign_Shifts_Time' %}",
+        data: dataString,
+        success: function(data) 
+        {
+          if (data.status == 'failed') 
+          {
+            alert('data for shift not found');
+          }
+          else
+          {
+            $("#Shift_Start_Time").val(data.Shift_Start_Time).attr("readonly", "readonly"); 
+            $("#Shift_End_Time").val(data.Shift_End_Time).attr("readonly", "readonly"); 
+          }
+        }
+      })
+    }
+    });
+</script>
+
 
 {% comment %} Ajax POST {% endcomment %}
 
