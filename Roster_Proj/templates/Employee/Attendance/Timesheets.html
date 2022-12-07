@@ -25,24 +25,31 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    <section class="" style="padding-top: 10px; padding-right: 0.5rem; padding-left: 0.5rem;">
       <div class="container-fluid">
-        <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div>
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><b>Timesheet</b></h1>
-          </div>
-          <div class="col-sm-6 ">
-            <a href="{% url 'mark_attendance' %}" class="btn btn-info float-right mx-2">
-              <i class="fas fa-plus"> Mark Attendance</i> 
-            </a>
-            
-            <a href="{% url 'shift/manage' %}" class="btn btn-success float-right mx-2">
-              <i class="fas fa-clock"> Clock in</i> 
-            </a>
+        <div class="card">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3><b>Timesheet</b></h3>
+              </div>
+              <div class="col-sm-6 ">
+                <a href="{% url 'mark_attendance' %}" class="btn btn-info float-right mx-2">
+                  <i class="fa-solid fa-user-clock px-1"></i> 
+                  Mark Attendance
+                </a>
+                {% comment %} <a href="{% url 'shift/manage' %}" class="btn btn-success float-right mx-2">
+                  <i class="fas fa-clock"> Clock in</i> 
+                </a> {% endcomment %}
+              </div>
+              <div class="col-12" style="font-size: .8rem;">
+                <a href="/"><i title="View" class="fa-solid fa-home"></i> Home</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i class="fa-solid fa-calendar-days"></i> Attendance</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i title="View" class="fa-solid fa-table"></i> Timesheet</a>
+              </div>
+            </div>
           </div>
         </div>
         {% for message  in messages %}
@@ -108,11 +115,11 @@
                   </tbody>
                   <tfoot>
                   <tr>
-                    <th>Rendering engine</th>
-                    <th>Rendering engine</th>
-                    <th>Browser</th>
-                    <th>Platform(s)</th>
-                    <th>Engine version</th>
+                    <th>Emp Id</th>
+                    <th>Employee Name</th>
+                    <th>Date</th>
+                    <th>In Time</th>
+                    <th>Out Time</th>
                     <th>Attendance Status</th>
                   </tr>
                   </tfoot>

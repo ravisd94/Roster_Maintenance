@@ -26,18 +26,23 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    <section class="" style="padding-top: 10px; padding-right: 0.5rem; padding-left: 0.5rem;"  >
       <div class="container-fluid">
-        <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div>
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><b>Employee</b></h1>
-          </div>
-          <div class="col-sm-6">
-            <a href="{% url 'employee/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Employee</a>
+        <div class="card">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6 col-6">
+                <h3><b>Employee</b></h3>
+              </div>
+              <div class="col-sm-6 col-6">
+                <a href="{% url 'employee/manage' %}" class="btn btn-info float-right"><i class="fas fa fa-user-plus"></i> Add New Employee</a>
+              </div>
+              <div class="col-12" style="font-size: .8rem;">
+                <a href="/"><i title="View" class="fa-solid fa-home"></i> Home</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i class="nav-icon fa-solid fa-users "></i> Employee</a>
+              </div>
+            </div>
           </div>
         </div>
         {% for message  in messages %}
@@ -88,10 +93,10 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="employee/manage?details={{employee.Emp_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
-                            <a href="employee/manage?id={{employee.Emp_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
+                            <a href="employee/manage?details={{employee.Emp_Id }}"><i title="View"class="fa-regular fa-eye px-1"></i></a>
+                            <a href="employee/manage?id={{employee.Emp_Id }}"><i title="Edit" class="fa-solid fa-pen-to-square px-1"></i></a>
                             <a href="employee/delete?id={{employee.Emp_Id }}" onclick="return confirm('Are you sure you want to delete?')">
-                              <i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
+                              <i title="Delete" class="fa-solid fa-trash-can px-1"></i></a>
                         </td>
                     </tr>
                         {% endfor %}

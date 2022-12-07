@@ -277,7 +277,9 @@
               console.log('att id:' + data.attendance_Status)
               if(data.attendance_Status == "No Shift")
               {
-                $("#btn_punch_in_punch_out").attr('disabled','disabled').addClass('btn float-right ml-2 btn btn-info')
+                $("#btn_punch_in_punch_out").attr('disabled','disabled')
+                .html('<i class="fa-solid fa-ban px-1"></i>')
+                .addClass('btn float-right ml-2 btn btn-info')
                 .text("No Shift is Mapped to user");
               }
               else if(data.attendance_Status == "Marked Clock In")

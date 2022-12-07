@@ -3,7 +3,7 @@
     <!-- Brand Logo -->
     <a href="/" class="brand-link">
       <img src="/static/assets_New/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+      <span class="brand-text font-weight-light">Roster Maintenance</span>
     </a>
 
     <!-- Sidebar -->
@@ -15,18 +15,18 @@
         </div>
         <div class="info">
           {% comment %} <a href="{% url 'register' %}" class="d-block"> {% endcomment %}
-            {{ request.user.username }} - Logout
+            {{ request.user.username }} Test - Logout
           </a>
         </div>
       </div>
 
       <!-- SidebarSearch Form -->
-      <div class="form-inline">
+      <div class="form-inline" hidden>
         <div class="input-group" data-widget="sidebar-search">
           <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
           <div class="input-group-append">
             <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
+              <i class="fa-solid fa-search fa-fw"></i>
             </button>
           </div>
         </div>
@@ -38,59 +38,38 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item has-treeview {% if 'index' in segment %} menu-open {% endif %}">
-            <a href="#" class="nav-link {% if 'index' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
+            <a href="/" class="nav-link {% if 'index' in segment %} active {% endif %}">
+              <i class="nav-icon fa-solid fa-tachometer-alt"></i>
               <p>
                 Dashboard
-                <i class="right fas fa-angle-left"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="/index.html" class="nav-link {% if 'index.html' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard v1</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="/index2.html" class="nav-link {% if 'index2.html' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard v2</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="/index3.html" class="nav-link {% if 'index3.html' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Dashboard v3</p>
-                </a>
-              </li>
-            </ul>
+
           </li>
           <li class="nav-item has-treeview {% if 'layout' in segment %} menu-open {% endif %}">
             <a href="#" class="nav-link {% if 'layout' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-building"></i>
+              <i class="nav-icon fa-solid fa-building"></i>
               <p>
                 Company
-                <i class="fas fa-angle-left right"></i>
-                <span class="badge badge-info right">6</span>
+                <i class="fa-solid fa-angle-left right"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav nav-treeview offset-1">
               <li class="nav-item">
                 <a href="{% url 'department' %}" class="nav-link {% if 'layout-top' in segment %} active {% endif %}">
-                  <i class="far fa fa-sitemap nav-icon"></i>
+                  <i class="fa-solid fa-sitemap nav-icon"></i>
                   <p>Department Master</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'designation' %}" class="nav-link {% if 'layout-fixed-sidebar' in segment %} active {% endif %}">
-                  <i class="far fa-id-badge nav-icon"></i>
+                  <i class="fa-solid fa-id-badge nav-icon"></i>
                   <p>Designation</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'role' %}" class="nav-link {% if 'layout-fixed-topnav' in segment %} active {% endif %}">
-                  <i class="far fa fa-universal-access nav-icon"></i>
+                  <i class="fa-solid fa-universal-access nav-icon"></i>
                   <p>Role</p>
                 </a>
               </li>
@@ -98,44 +77,44 @@
           </li>
           <li class="nav-item has-treeview {% if 'charts' in segment %} menu-open {% endif %}">
             <a href="{% url 'employee' %}" class="nav-link {% if 'charts' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-users"></i>
+              <i class="nav-icon fa-solid fa-users"></i>
               <p>
                 Employee
               </p>
             </a>
           </li>
-          <li class="nav-item has-treeview {% if 'charts' in segment %} menu-open {% endif %}">
+          {% comment %} <li class="nav-item has-treeview {% if 'charts' in segment %} menu-open {% endif %}">
             <a href="{% url 'employee' %}" class="nav-link {% if 'charts' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-person"></i>
+              <i class="nav-icon fa-solid fa-person"></i>
               <p>
                 Project
               </p>
             </a>
-          </li>
+          </li> {% endcomment %}
           <li class="nav-item has-treeview {% if 'layout' in segment %} menu-open {% endif %}">
             <a href="#" class="nav-link {% if 'layout' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-building"></i>
+              <i class="fa-solid fa-business-time nav-icon"></i>
               <p>
                 Shift
-                <i class="fas fa-angle-left right"></i>
+                <i class="fa-solid fa-angle-left right"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav nav-treeview offset-1">
               <li class="nav-item">
                 <a href="{% url 'shift' %}" class="nav-link {% if 'layout-top' in segment %} active {% endif %}">
-                  <i class="far fa fa-building nav-icon"></i>
+                  <i class="fa-solid fa-clock nav-icon"></i>
                   <p>Shift Master</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'assign_shift' %}" class="nav-link {% if 'layout-fixed-sidebar' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fa-solid fa-calendar-plus nav-icon"></i>
                   <p>Assign Shift</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'shift_calender' %}" class="nav-link {% if 'layout-fixed-sidebar' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fa-solid fa-calendar-week nav-icon"></i>
                   <p>Shift Calender</p>
                 </a>
               </li>
@@ -143,23 +122,22 @@
           </li>
           <li class="nav-item has-treeview {% if 'layout' in segment %} menu-open {% endif %}">
             <a href="#" class="nav-link {% if 'layout' in segment %} active {% endif %}">
-              <i class="nav-icon fas fa-building"></i>
+              <i class="fa-solid fa-calendar-days nav-icon"></i>
               <p>
                 Attendance
-                <i class="fas fa-angle-left right"></i>
-                <span class="badge badge-info right">6</span>
+                <i class="fa-solid fa-angle-left right"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
+            <ul class="nav nav-treeview offset-1">
               <li class="nav-item">
                 <a href="{% url 'timesheet' %}" class="nav-link {% if 'layout-top' in segment %} active {% endif %}">
-                  <i class="far fa fa-building nav-icon"></i>
+                  <i class="fa-solid fa-table nav-icon"></i>
                   <p>Timesheet</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'attendance_calender' %}" class="nav-link {% if 'layout-fixed-sidebar' in segment %} active {% endif %}">
-                  <i class="far fa-circle nav-icon"></i>
+                  <i class="fa-regular fa-calendar-days nav-icon"></i>
                   <p>Attendance Calender</p>
                 </a>
               </li>

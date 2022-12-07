@@ -25,18 +25,25 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    <section class="" style="padding-top: 10px; padding-right: 0.5rem; padding-left: 0.5rem;">
       <div class="container-fluid">
-        <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div>
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><b>Shift</b></h1>
-          </div>
-          <div class="col-sm-6">
-            <a href="{% url 'shift/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Shift</a>
+        <div class="card">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3><b>Shift</b></h3>
+              </div>
+              <div class="col-sm-6">
+                <a href="{% url 'shift/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Shift</a>
+              </div>
+              <div class="col-12" style="font-size: .8rem;">
+                <a href="/"><i title="View" class="fa-solid fa-home"></i> Home</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i class="fa-solid fa-business-time"></i> Shift</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i title="View" class="fa-solid fa-clock"></i> Shift Master</a>
+              </div>
+            </div>
           </div>
         </div>
         {% for message  in messages %}
@@ -94,9 +101,9 @@
                         </td>
                         <td>
                           {% if shift.Shift_Name != "Custom"%}
-                            <a href="shift/manage?details={{shift.Shift_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
-                            <a href="shift/manage?id={{shift.Shift_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
-                            <a href="shift/delete?id={{shift.Shift_Id }}"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
+                            <a href="shift/manage?details={{shift.Shift_Id }}"><i title="View"class="fa-regular fa-eye px-1"></i></a>
+                            <a href="shift/manage?id={{shift.Shift_Id }}"><i title="Edit" class="fa-solid fa-pen-to-square px-1"></i></a>
+                            <a href="shift/delete?id={{shift.Shift_Id }}"><i title="Delete" class="fa-solid fa-trash-can px-1"></i></a>
                           {% endif %}
                         </td>
                     </tr>

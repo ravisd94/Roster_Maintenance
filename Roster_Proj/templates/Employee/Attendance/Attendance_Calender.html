@@ -51,17 +51,22 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
-  <section class="content-header">
+  <section class="" style="padding-top: 10px; padding-right: 0.5rem; padding-left: 0.5rem;">
     <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>Shjift Assign Calendar</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Calendar</li>
-          </ol>
+      <div class="card">
+        <div class="card-header ">
+          <div class="row">
+            <div class="col-sm-6">
+              <h3><b>Attendance Calendar</b></h3>
+            </div>
+            <div class="col-12" style="font-size: .8rem;">
+              <a href="/"><i title="View" class="fa-solid fa-home"></i> Home</a>
+              <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+              <a href=""><i class="fa-solid fa-calendar-days"></i> Attendance</a>
+              <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+              <a href=""><i title="View" class="fa-regular fa-calendar-days"></i> Attendance Calendar</a>
+            </div>
+          </div>
         </div>
       </div>
     </div><!-- /.container-fluid -->
@@ -109,11 +114,16 @@
             <!-- /.card -->
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Create Event</h3>
+                <h3 class="card-title">Attendace Type</h3>
               </div>
               <div class="card-body">
                 <div id="external_events">
                   <ul id="ul_shifts" class="list-group">
+                    <li class='list-group-item d-flex justify-content-between align-items-center'>
+                      No Shift Mapped
+                      <span style='height:20px;width:20px;border-radius: 50%;background-color:orange'>
+                      </span>
+                    </li>
                     <li class='list-group-item d-flex justify-content-between align-items-center'>
                       Absent
                       <span style='height:20px;width:20px;border-radius: 50%;background-color:red'>
@@ -147,7 +157,7 @@
         </div>
         <!-- /.col -->
         <div class="col-md-9">
-          <div class="card card-primary">
+          <div class="card card-primary" id="Calender_Card" hidden>
             <div class="card-body p-1">
               <!-- THE CALENDAR -->
               <div id="calendar"></div>
@@ -228,7 +238,7 @@
         //$("#external-events").load(" #external-events");
         //$("#external_events").load(window.location + " #external_events > *");
         //$('dynamic_shifts').empty();
-
+        $('#Calender_Card').removeAttr('hidden');
         var dataString = $(this).serialize();
         $.ajax({
             type: 'GET',

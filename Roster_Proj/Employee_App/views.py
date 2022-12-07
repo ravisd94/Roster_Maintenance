@@ -22,12 +22,14 @@ def login(request):
 
 def home(request):
     emps=Emp_Master.objects.all()
+    attendance_list_today = Attendance_Master.objects.filter(Attendance_Date=datetime.date.today())
     context = {
         'page_title':'Home',
         'employees':emps,
         'total_department':len(Dept_Master.objects.all()),
         'total_position':len(Designation_Master.objects.all()),
         'total_employee':len(Emp_Master.objects.all()),
+        'total_Present': len(attendance_list_today)
     }
     return render(request, 'Employee/Home.html',context)
 
@@ -568,22 +570,26 @@ def manage_emp(request):
             print('Value %s' % (value) )
     if 'id' in data:
         id = data['id']
-        if id == '':
-            card_header='Create New '
-        else:
+    
+    if 'details' in data:
+        details = data['details']
+
+    if id == '' and details == '':
+        card_header='Create New Employee'
+    else:
+        if id != '':
             employee = Emp_Master.objects.filter(Emp_Id=id).first()
             Desg_Active_List = Designation_Master.objects.filter(Desg_Status=True,Dept_Id = employee.Dept_Id)
             print(employee.Dept_Id)
-        card_header='Edit '
+            card_header='Edit Employee: ' +employee.First_Name + " " +employee.Middle_Name + " " +employee.Last_Name + "(Emp Id: " + str(employee.Emp_Id) + ")"
 
-    if 'details' in data:
-        details = data['details']
         if details != '':
             employee = Emp_Master.objects.filter(Emp_Id=details).first()
             Desg_Active_List = Designation_Master.objects.filter(Desg_Status=True,Dept_Id = employee.Dept_Id)
             print(employee.Role_Id)
-            card_header='Details of Employee'
+            card_header='Details of Employee: '+employee.First_Name + " " +employee.Middle_Name + " " +employee.Last_Name + "(Emp Id: " + str(employee.Emp_Id) + ")"
  
+
     print('Desg_Active_List: ' +str(Desg_Active_List))
     context = {
         'employee' : employee,
@@ -871,13 +877,6 @@ def save_shift(request):
         isExist = Shift_Master.isExists(Name)
         print(isExist)
 
-        # if 'Dept_Status' in data:
-        #     Status = data['Dept_Status']
-        #     if Status == 'on':
-        #         Status=True
-        # else:
-        #     Status=False
-        # print("status: "+ str(Status))
         try:
             ret = HttpResponse(json.dumps(resp), content_type="application/json")
             id  = ''
@@ -906,8 +905,6 @@ def save_shift(request):
                 save_shift.save()
                 messages.success(request, "Shift added successfully")   
                 resp['status'] = 'success'
-                return HttpResponse(json.dumps(resp), content_type="application/json")   
-                # return HttpResponseRedirect('/department')  
                     
             else:
                 print("Now: "+str(datetime.datetime.now()))
@@ -919,21 +916,14 @@ def save_shift(request):
                 resp['status'] = 'success'
                 messages.success(request, "Shift id: "+str(id)+" updated successfully")  
                 print(str(resp['msg']))
-                # return HttpResponseRedirect('/department')
-                return HttpResponse(json.dumps(resp), content_type="application/json")   
-                # return department(request)
-            
         except Exception as e:
             resp['status'] = 'failed'
             resp['msg']="Somehing went wrong!, please contact to system administrator..." + str(type(e))
             print(str(resp['msg']))
             print(e)
-            return HttpResponse(json.dumps(resp), content_type="application/json")
         print('final')
         return HttpResponseRedirect("/department")
-        # return department()
-        # return render(request,'Employee/Department/Departments.html',{'msg':msg})
-    # return HttpResponse(json.dumps(resp), content_type="application/json")
+
     else:
         return HttpResponse("<h1>404 - Page not found...")
 
@@ -1051,17 +1041,56 @@ def save_assign_shift(request):
         Shift_Id=data['Shift_Id']
         Start_Date=data['Start_Date']
         End_Date=data['End_Date']
+        Emp_Shift_Id=''
         print('Shift_Id '+ str(type(Shift_Id)))
         print(data['Shift_Start_Time'])
         try:
+            if 'Emp_Shift_Id' in data:
+                Emp_Shift_Id=data['Emp_Shift_Id'] 
+            
             Emp = Emp_Master.objects.filter(Emp_Id = Emp_Id).first()
             Shift = Shift_Master.objects.filter(Shift_Id =Shift_Id).first()
+
             if(Shift_Id == '1'):
                 Shift_Start_Time=data['Shift_Start_Time']
                 Shift_End_Time=data['Shift_End_Time'] 
             else:
                 Shift_Start_Time = Shift.Shift_Start_Time
                 Shift_End_Time = Shift.Shift_End_Time
+            
+            if Emp_Shift_Id == '':
+                shift_details_start_date = Employee_Shift_Master.objects.filter(
+                    Emp_Id=Emp,
+                    Start_Date__lte=Start_Date,
+                    End_Date__gte=Start_Date
+                    ).first()
+
+                shift_details_end_date = Employee_Shift_Master.objects.filter(
+                    Emp_Id=Emp,
+                    Start_Date__lte=End_Date,
+                    End_Date__gte=End_Date
+                    ).first()
+
+            else:
+                shift_details_start_date = Employee_Shift_Master.objects.exclude(Emp_Shift_Id = Emp_Shift_Id).filter(
+                    Emp_Id=Emp,
+                    Start_Date__lte=Start_Date,
+                    End_Date__gte=Start_Date
+                    ).first()
+
+                shift_details_end_date = Employee_Shift_Master.objects.exclude(Emp_Shift_Id = Emp_Shift_Id).filter(
+                    Emp_Id=Emp,
+                    Start_Date__lte=End_Date,
+                    End_Date__gte=End_Date
+                    ).first()
+
+            if(shift_details_start_date != None):
+                resp['msg']="Start Date is already mapped to selected user"
+                return HttpResponse(json.dumps(resp), content_type="application/json")  
+
+            if(shift_details_end_date != None):
+                resp['msg']="End Date is already mapped to selected user"
+                return HttpResponse(json.dumps(resp), content_type="application/json") 
 
             print(Shift_Start_Time)
             Emp_Shift_Id  = ''
@@ -1070,12 +1099,6 @@ def save_assign_shift(request):
             print('id:'+Emp_Shift_Id)
             # print('test: ' not isExist)
             if Emp_Shift_Id == '':
-                # if isExist == True:
-                #     resp['status'] = 'failed'
-                #     resp['msg']="Email id '"+Email_ID+"' is already exist, please use other Email id"
-                #     print(str(resp['msg']))
-                #     return HttpResponse(json.dumps(resp), content_type="application/json")
-                
                 save_Emp_Shift = Employee_Shift_Master(
                         Emp_Id=Emp,
                         Shift_Id=Shift,
@@ -1087,8 +1110,6 @@ def save_assign_shift(request):
                 save_Emp_Shift.save()
                 messages.success(request, "Record added successfully")   
                 resp['status'] = 'success'
-                return HttpResponse(json.dumps(resp), content_type="application/json")   
-                # return HttpResponseRedirect('/department')  
                     
             else:
                 Employee_Shift_Master.objects.filter(Emp_Shift_Id = Emp_Shift_Id).update(
@@ -1101,17 +1122,15 @@ def save_assign_shift(request):
                     )
                 resp['status'] = 'success'
                 messages.success(request, "Record updated successfully")  
-                print(str(resp['msg']))
-                return HttpResponse(json.dumps(resp), content_type="application/json")   
+                print(str(resp['msg'])) 
             
         except Exception as e:
             resp['status'] = 'failed'
-            resp['msg']="Somehing went wrong!, please contact to system administrator..." + str(type(e))
+            resp['msg']="Somehing went wrong!, please contact to system administrator..." + str(e)
             print(e)
             print(str(resp['msg']))
-            return HttpResponse(json.dumps(resp), content_type="application/json")
         print('final')
-        return HttpResponseRedirect("/department")
+        return HttpResponse(json.dumps(resp), content_type="application/json")  
         
     else:
         return HttpResponse("<h1>404 - Page not found...")
@@ -1152,12 +1171,6 @@ def Get_Assigned_Shifts(request):
         print("start -------------------------")
         for item in assign:
             r = lambda: random.randint(0,255)
-            # if not test.__contains__(item.Shift_Id.Shift_Name):
-            # if item.Shift_Id.Shift_Name not in test:
-            #     print('title: ' + item.Shift_Id.Shift_Name)
-            #     bg_color='#%02X%02X%02X' % (r(),r(),r())
-            #     print(Final_Json_Data)
-                # test.append(item.Shift_Id.Shift_Name)
             Final_Json_Data.append(
                 {
                     'title': str(item.Shift_Id.Shift_Name) + ' (' + str(item.Shift_Start_Time.strftime("%I:%M %p")) + ' - ' + str(item.Shift_End_Time.strftime("%I:%M %p"))+')',
@@ -1271,12 +1284,9 @@ def Clock_In_Clock_Out_Old(request):
                     )
 
                 print(att_Type_Code.Attendance_Type_Name)
-                # Attendance_Master.objects.filter(Attendance_Id = Attendance_Id).update(
-                #     Clock_Out_Time = current_time,
-                #     Attendance_Type_Id=att_Type_Code
-                # )
+
                 resp['msg'] =str("Clocked out successfully for user: " +
-                Emp.First_Name + " " + Emp.Middle_Name +  " " + Emp.Last_Name)
+                shift_details_today.Emp_Id.First_Name + " " + shift_details_today.Emp_Id.Middle_Name +  " " + shift_details_today.Emp_Id.Last_Name)
             
             resp['status'] = 'success'
             print(str(resp['status'] ))
