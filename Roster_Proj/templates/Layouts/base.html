@@ -1,23 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="/static/assets_New/favicon.ico" type="image/x-icon">
-  <link rel="canonical" href="https://appseed.us/adminlte"/>
+  <link rel="canonical" href="https://appseed.us/adminlte" />
 
   {% comment %} boostrap togle {% endcomment %}
-  <link rel="stylesheet" href="/static/dist/css/main.css" >
+  <link rel="stylesheet" href="/static/dist/css/main.css">
 
   <title>
     Django AdminLTE - {% block title %}{% endblock %} | AppSeed
-  </title> 
+  </title>
 
   {% block stylesheets %}{% endblock stylesheets %}
-<style>.NewContentHeader { padding-top: 5px; }</style>
+  <style>
+    .NewContentHeader {
+      padding-top: 5px;
+    }
+  </style>
 </head>
+
 <body class="hold-transition {% block body_class %}{% endblock body_class %}">
-<div class="wrapper">
+  <div class="wrapper">
 
     {% include 'includes/navigation.html' %}
 
@@ -29,15 +35,16 @@
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
+      <!-- Control sidebar content goes here -->
     </aside>
     <!-- /.control-sidebar -->
 
-</div>
-<!-- ./wrapper -->
+  </div>
+  <!-- ./wrapper -->
 
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+  <!-- Specific Page JS goes HERE  -->
+  {% block javascripts %}{% endblock javascripts %}
 
 </body>
+
 </html>

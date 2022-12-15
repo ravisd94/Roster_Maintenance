@@ -194,10 +194,9 @@ class Attendance_Master(models.Model):
             return Attendance_Type.objects.filter(Attendance_Type_Code = 'HD').first()
         elif delta_hours >= 8 :
             return Attendance_Type.objects.filter(Attendance_Type_Code = 'P').first()
-        
-    
-    # def is_Clocked_In(att_id):
+         # def is_Clocked_In(att_id):
     #     if Attendance_Master.objects.filter(Attendance_Id=att_id,Clock_In_Time__isnull=True):
     #         return False
     #     return True
+
 
