@@ -10,43 +10,42 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Notifications Dropdown Menu -->
-      <li class="nav-item dropdown">
+      <li class="nav-item dropdown text-white text-wrap" >
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
+          <img style="height:30px" class="img-circle elevation-2" alt="User Image"
+          {% if request.session.user_Gender and request.session.user_Gender == "Male" %}
+          src="/static/dist/img/Male.jpg" 
+          {% elif request.session.user_Gender and request.session.user_Gender == "Female" %}
+          src="/static/dist/img/Female.jpg" 
+          {% endif %}
+          >
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">15 Notifications</span>
+          <span class="dropdown-item dropdown-header">
+            <h6 class="text-wrap font-weight-bold">User: {{request.session.user_fullName}}</h6>
+            <h7 class="text-wrap">Email: {{request.session.user_email}}</h7>
+          </span>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-envelope mr-2"></i> 4 new messages
-            <span class="float-right text-muted text-sm">3 mins</span>
+          <a href="/employee/manage?details={{request.session.user_Emp_Id}}" class="dropdown-item">
+            <i class="fa-solid fa-user-circle"></i>
+            Profile
           </a>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> 8 friend requests
-            <span class="float-right text-muted text-sm">12 hours</span>
+            <i class="fa-solid fa-unlock-alt mr-2"></i> 
+            Change Password
           </a>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> 3 new reports
-            <span class="float-right text-muted text-sm">2 days</span>
+          <a href="/accounts/logout" class="dropdown-item"  role="button">
+            <i title="Log Out" class="fa-solid fa-right-from-bracket "></i>
+            Logout
           </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-        </div>
       </li>
       {% comment %} <li class="nav-item">
         <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
           <i class="fas fa-th-large"></i>
         </a>
       </li> {% endcomment %}
-      <li class="nav-item">
-        <a class="nav-link" href="#" role="button">
-          <i title="Log Out" class="fa-solid fa-right-from-bracket "></i>
-          
-        </a>
-      </li>
       
     </ul>
   </nav>

@@ -23,6 +23,7 @@ Created_Date,
 Modified_Date
 )
 values
+('Present','A','Absent',date('now'),date('now')),
 ('Absent','A','Absent',date('now'),date('now')),
 ('Present (Late)','PL','If Emloyee mark the attendance after 30 minutes of clock in time',date('now'),date('now')),
 ('Half Day','A','If Emloyee only complete 4 Hrs. of shift',date('now'),date('now'))

@@ -25,25 +25,26 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
+    <section class="" style="padding-top: 10px; padding-right: 0.5rem; padding-left: 0.5rem;"  >
       <div class="container-fluid">
-        <div class="row mb-2">
-            <a href="/"><i title="View" class="far fa fa-home nav-icon px-1"></i> Home</a><i title="View" class="far fa fa-left nav-icon px-1"></i>
-            <a href="/"><i title="View" class="far fa fa-building nav-icon px-1"></i> Company</a>
-        </div>
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1><b>Project</b></h1>
-          </div>
-          <div class="col-sm-6">
-            <a href="{% url 'project/manage' %}" class="btn btn-info float-right"><i class="fas fa-plus"></i> Add New Project</a>
+        <div class="card">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6 col-6">
+                <h3><b>Project</b></h3>
+              </div>
+              <div class="col-sm-6 col-6">
+                <a href="{% url 'project/manage' %}" class="btn btn-info float-right"><i class="fas fa fa-plus"></i>  Add New Project</a>
+              </div>
+              <div class="col-12" style="font-size: .8rem;">
+                <a href="/"><i title="View" class="fa-solid fa-home"></i> Home</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i class="nav-icon fa-solid fa-screwdriver-wrench"></i> Project</a>
+              </div>
+            </div>
           </div>
         </div>
         {% for message  in messages %}
-          {% comment %} <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-            <strong>{{message}}</strong> 
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div> {% endcomment %}
           <div class="alert {{ message.tags }} alert-dismissible">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <h5><i class="icon fas fa-check"></i> {{message}}</h5>
@@ -69,16 +70,19 @@
                     <th>Id</th>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Client</th>
                     <th>Status</th>
                     <th>Action</th>
+                    <th>Barcode Action</th>
                   </tr>
                   </thead>
                   <tbody>
                     <tr>
                         {% for project in projects %}
-                        <th>{{ project.Proj_Id }}</th>
+                        <th>{{ project.Proj_id }}</th>
                         <td>{{ project.Proj_Name }}</td>
-                        <td>{{ project.Proj_description }}</td>
+                        <td>{{ project.Proj_Description }}</td>
+                        <td>{{ project.Client_Name }}</td>
                         <td>
                             {% if project.Proj_Status == True %}
                             <span class="badge badge-success">Active</span>
@@ -87,26 +91,60 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="project/manage?details={{project.Proj_Id }}"><i title="View" class="far fa fa-eye nav-icon px-1"></i></a>
-                            <a href="project/manage?id={{project.Proj_Id }}"><i title="Edit" class="far fa fa-edit nav-icon px-1"></i></a>
-                            <a href="/"><i title="Delete" class="far fa fa-trash nav-icon px-1"></i></a>
-                        </td>
+                          <a href="department/manage?details={{department.Dept_Id }}">
+                            <i title="View"class="fa-regular fa-eye px-1"></i>
+                          </a>
+                          <a href="department/manage?id={{department.Dept_Id }}">
+                            <i title="Edit" class="fa-solid fa-pen-to-square px-1"></i>
+                          </a>
+                          <a href="department/delete?id={{department.Dept_Id }}">
+                            <i title="Delete" class="fa-solid fa-trash-can px-1"></i>
+                          </a>
+                      </td>
+                      <td>
+                        <a href="/"
+                        data-toggle="modal" data-target="#qrCodeModal" 
+                        data-name="{{ project.Proj_Name }}" 
+                        data-description="{{ project.Proj_Description }}" 
+                        data-src="{{ project.Proj_BarCode.url }}">
+                          <i title="View Barcode" class="fa-solid fa-magnifying-glass px-1"></i>
+                        </a>
+                        <a href="#">
+                          <i title="Download Barcode" class="fa-solid fa-download px-1"
+                          onclick="downloadQrCode('{{ project.Proj_BarCode.url }}')"></i>
+                        </a>
                     </tr>
                         {% endfor %}
                   </tbody>
-                  <tfoot>
-                  <tr>
-                    <th>Rendering engine</th>
-                    <th>Rendering engine</th>
-                    <th>Browser</th>
-                    <th>Platform(s)</th>
-                    <th>Engine version</th>
-                  </tr>
-                  </tfoot>
                 </table>
               </div>
               <!-- /.card-body -->
             </div>
+            <!-- /.modal -->
+            <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="qrCodeModalLabel"><p id="qrCodeName"></p></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body bg-dark d-flex justify-content-center">
+                    <img id="qrCodeImage" class="bg-primary" src="" alt="QR Code">
+                  </div>
+                  <div class="modal-footer">
+                    <p id="qrCodeDescription"></p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="download_qr_code({{ project.pk }})">Download</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- /.modal -->
             <!-- /.card -->
           </div>
           <!-- /.col -->
@@ -153,6 +191,27 @@
         "responsive": true,
       });
     });
+
+    $('#qrCodeModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget)
+      var name = button.data('name')
+      var description = button.data('description')
+      var src = button.data('src')
+      var modal = $(this)
+      modal.find('#qrCodeName').text(name)
+      modal.find('#qrCodeDescription').text(description)
+      modal.find('#qrCodeImage').attr('src', src)
+    })
+    
+    function downloadQrCode(url) {
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = 'qr_code.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
   </script>
 
 {% endblock javascripts %}

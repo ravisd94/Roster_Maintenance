@@ -3,7 +3,7 @@ from msilib.schema import _Validation
 from urllib import response
 from xml.dom import ValidationErr
 from django.shortcuts import render
-from .models import Emp_Master,Dept_Master,Designation_Master, Role_Master, Shift_Master, Employee_Shift_Master,Attendance_Master, Attendance_Type
+from .models import Emp_Master,Dept_Master,Designation_Master, Role_Master, Shift_Master, Employee_Shift_Master,Attendance_Master, Attendance_Type, Project_Master
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
@@ -14,12 +14,67 @@ from .forms import RoleForm_Add
 import re
 import random
 from datetime import timedelta
+from django.core.mail import send_mail
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.decorators import login_required
+import manage 
+from django.http import HttpResponse
+
+import qrcode
+from django.http import HttpResponse
+from django.utils.text import slugify
+
 
 # Create your views here.
-def login(request):
+def user_login(request):
+    if request.method == 'POST':
+        data =  request.POST
+        email = data['email']
+        password = data['password']
+
+        user = authenticate(request,email = email, password= password)
+        user1 = Emp_Master.objects.filter(Emp_Id = '2').first()
+        if user is None:
+            print('Invalid Credentials')
+            return render(request,'Accounts/login.html')
+        else:
+            login(request,user)
+            request.session['user_email']= user.email
+            request.session['user_Emp_Id']= user.Emp_Id
+            request.session['user_is_superuser']= user.is_superuser
+            request.session['user_fullName']= 'Ravi Sakharam Dhondkar'
+            request.session['user_last_login']= user.last_login.strftime("%d-%b-%y %I:%M %p")
+            request.session['user_Gender']= user.Emp_Sex
+            pswd = Emp_Master.objects.make_random_password(length=14)
+
+            subject = "Id creation in Roster Mangement"  
+            msg = f"""
+                Dear Ravi Sakharam Dhondkar,
+                Your id has been created in Roster Mangement, please use below password to login.
+                Password: {pswd}."""
+            from_id = "info@lbmrecruitment.com.au"
+            to = ['ravi.dhondkar@gmail.com']
+            # res     = send_mail(subject, msg, from_id, ['ravi.dhondkar@gmail.com'] )  
+            # if(res == 1):  
+            #     msg = "Mail Sent Successfuly"  
+            # else:  
+            #     msg = "Mail could not sent"  
+
+
+            if request.GET.get('next',None):
+                print(request.GET['next'])
+                return HttpResponseRedirect(request.GET['next'])
+            return HttpResponseRedirect("/")
     return render(request,'Accounts/login.html')
+    # u = Emp_Master.objects.get(Emp_Id=1)
+    # u.set_password('Codestack@123')
+    # u.save()
 
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('login')
 
+@login_required(login_url='/accounts/login')
 def home(request):
     emps=Emp_Master.objects.all()
     attendance_list_today = Attendance_Master.objects.filter(Attendance_Date=datetime.date.today())
@@ -33,7 +88,8 @@ def home(request):
     }
     return render(request, 'Employee/Home.html',context)
 
-# Department Views
+# Department Views.
+@login_required(login_url='/accounts/login')
 def department(request):
     department_list = Dept_Master.objects.all()
     context = {
@@ -42,6 +98,7 @@ def department(request):
     }
     return render(request, 'Employee/Department/Departments.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_dept(request):
     card_header=''
     department = {}
@@ -70,6 +127,7 @@ def manage_dept(request):
     }
     return render(request, 'Employee/Department/manage_department.html',context)
 
+@login_required(login_url='/accounts/login')
 def delete_dept(request):
     try:
         id = request.GET['id']
@@ -79,6 +137,7 @@ def delete_dept(request):
         messages.error(request,"Somehing went wrong!, please contact to system administrator...")
     return HttpResponseRedirect("/department")
 
+@login_required(login_url='/accounts/login')
 def save_department(request):
     if request.method == 'POST':
         data =  request.POST
@@ -161,6 +220,7 @@ def save_department(request):
 # End Department Views
 
 # Designation Views
+@login_required(login_url='/accounts/login')
 def designation(request):
     designation_list = Designation_Master.objects.all()
     context = {
@@ -169,6 +229,7 @@ def designation(request):
     }
     return render(request, 'Employee/Designation/Designations.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_desg(request):
     card_header=''
     designation = {}
@@ -199,6 +260,7 @@ def manage_desg(request):
     }
     return render(request, 'Employee/Designation/manage_designation.html',context)
 
+@login_required(login_url='/accounts/login')
 def save_designation(request):
     if request.method == 'POST':
         data =  request.POST
@@ -289,6 +351,7 @@ def save_designation(request):
     else:
         return HttpResponse("<h1>404 - Page not found...")
 
+@login_required(login_url='/accounts/login')
 def delete_desg(request):
     try:
         id = request.GET['id']
@@ -301,6 +364,7 @@ def delete_desg(request):
 # End Designation Views
 
 # Role Views
+@login_required(login_url='/accounts/login')
 def role(request):
     role_list = Role_Master.objects.all()
     context = {
@@ -309,6 +373,7 @@ def role(request):
     }
     return render(request, 'Employee/Role/Roles.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_role(request):
     card_header=''
     role = {}
@@ -337,6 +402,7 @@ def manage_role(request):
     }
     return render(request, 'Employee/Role/manage_role.html',context)
 
+@login_required(login_url='/accounts/login')
 def save_role(request):
     if request.method == 'POST':
         data =  request.POST
@@ -412,6 +478,7 @@ def save_role(request):
     else:
         return HttpResponse("<h1>404 - Page not found...")
 
+@login_required(login_url='/accounts/login')
 def delete_role(request):
     try:
         id = request.GET['id']
@@ -426,43 +493,51 @@ def delete_role(request):
 # Employee Views
 
 # Project Views
-
+@login_required(login_url='/accounts/login')
 def project(request):
-    role_list = Role_Master.objects.all()
+    project_list = Project_Master.objects.all()
+    for project in project_list:
+        print('Key: %s:' + str(project.Proj_Name) )
     context = {
-        'page_title':'Role',
-        'roles':role_list,
+        'page_title':'Project',
+        'projects':project_list,
     }
-    return render(request, 'Employee/Role/Roles.html',context)
+    return render(request, 'Employee/Project/Projects.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_project(request):
     card_header=''
-    role = {}
+    project = {}
     data =  request.GET
     id = ''
     details=''
+    for key, value in data.items():
+            print('Key: %s' % (key) ) 
+            print('Value %s' % (value) )
+            
     if 'id' in data:
         id = data['id']
         if id != '':
-            role = Role_Master.objects.filter(Role_Id=id).first()
-        card_header='Edit the Role'
+            project = Project_Master.objects.filter(Proj_id=id).first()
+        card_header='Edit the Project'
 
     if 'details' in data:
         details = data['details']
         if details != '':
-            role = Role_Master.objects.filter(Role_Id=details).first()
-            card_header='Details of Role: ' + role.Role_Name
+            project = Project_Master.objects.filter(Proj_id=details).first()
+            card_header='Details of Project: ' + project.Proj_Name
     
     if 'id' not in data and 'details' not in data:
-        card_header='Create New Role'
+        card_header='Create New Project'
 
     context = {
-        'role' : role,
+        'project' : project,
         'card_header': card_header,
         'details' : details
     }
-    return render(request, 'Employee/Role/manage_role.html',context)
+    return render(request, 'Employee/Project/manage_project.html',context)
 
+@login_required(login_url='/accounts/login')
 def save_project(request):
     if request.method == 'POST':
         data =  request.POST
@@ -473,15 +548,20 @@ def save_project(request):
             print('Key: %s' % (key) ) 
             print('Value %s' % (value) )
         print("------------------End All Key value Pairs-------------")
-        Name = data['Role_Name']
-        Desc = data['Role_description']
-        print(Name)
-        print(Desc)
-        isExist = Role_Master.isExists(Name)
+        
+        Proj_Name = data['Proj_Name']
+        Proj_Description = data['Proj_Description']
+        Client_Name = data['Client_Name']
+        Point_of_Contact_Name = data['Point_of_Contact_Name']
+        Point_of_Contact_Email = data['Point_of_Contact_Email']
+        Proj_Start_Date = data['Proj_Start_Date']
+        Proj_End_Date = data['Proj_End_Date']
+
+        isExist = Project_Master.isExists(Proj_Name)
         print(isExist)
 
-        if 'Role_Status' in data:
-            Status = data['Role_Status']
+        if 'Proj_Status' in data:
+            Status = data['Proj_Status']
             if Status == 'on':
                 Status=True
         else:
@@ -490,37 +570,48 @@ def save_project(request):
         try:
             ret = HttpResponse(json.dumps(resp), content_type="application/json")
             id  = ''
-            if 'Role_Id' in data:
-                id = data['Role_Id']
+            if 'Proj_id' in data:
+                id = data['Proj_id']
             print('id:'+id)
             # print('test: ' not isExist)
             if id == '':
-                if Name is None:
+                if Proj_Name is None:
                     resp['status'] = 'failed'
-                    resp['msg']= "Name is mandatory, please add Name"
+                    resp['msg']= "Project Name is mandatory, please add Name"
                     print(str(resp['msg']))
                     return HttpResponse(json.dumps(resp), content_type="application/json")
                 
                 if isExist == True:
                     resp['status'] = 'failed'
-                    resp['msg']="Department '"+Name+"' is already exist, please use other name"
+                    resp['msg']="Project Name '"+Proj_Name+"' is already exist, please use other name"
                     print(str(resp['msg']))
                     # messages.error(request, "Department '"+Name+"' is already exist, please use other name")
                     return HttpResponse(json.dumps(resp), content_type="application/json")
                 
-                save_role = Role_Master(Role_Name=Name, Role_description = Desc,Role_Status = True)
-                save_role.save()
-                messages.success(request, "Role added successfully")   
+                # qrcode_img = qrcode.make(Proj_Name)
+                # canvas = Image.new('RGB',(290,290),'white')
+                # draw = ImageDraw.Draw(canvas)
+                # canvas.paste(qrcode_img)
+                # buffer = BytesIO()
+                # canvas.save(buffer,'PNG')
+
+                save_project = Project_Master.objects.create(Proj_Name=Proj_Name, Proj_Description = Proj_Description,Proj_Status = True,
+                    Client_Name=Client_Name,Point_of_Contact_Name=Point_of_Contact_Name,
+                    Point_of_Contact_Email=Point_of_Contact_Email,Proj_Start_Date=Proj_Start_Date, Proj_End_Date=Proj_End_Date
+                    )
+                
+                save_project.save()
+                messages.success(request, "Project added successfully")   
                 resp['status'] = 'success'
                 return HttpResponse(json.dumps(resp), content_type="application/json")   
                 # return HttpResponseRedirect('/department')  
                     
             else:
                 print("Now: "+str(datetime.datetime.now()))
-                Role_Master.objects.filter(Role_Id = id).update(
-                    Role_Name = Name,
-                    Role_Status=Status,
-                    Role_description = Desc, 
+                Project_Master.objects.filter(Proj_id = id).update(
+                    Proj_Name=Proj_Name, Proj_Description = Proj_Description,Proj_Status = Status,
+                    Client_Name=Client_Name,Point_of_Contact_Name=Point_of_Contact_Name,
+                    Point_of_Contact_Email=Point_of_Contact_Email,Proj_Start_Date=Proj_Start_Date, Proj_End_Date=Proj_End_Date,
                     Modified_Date = datetime.datetime.now()  )
                 resp['status'] = 'success'
                 messages.success(request, "Role id: "+str(id)+" updated successfully")  
@@ -529,7 +620,7 @@ def save_project(request):
             
         except Exception as e:
             resp['status'] = 'failed'
-            resp['msg']="Somehing went wrong!, please contact to system administrator..." + str(type(e))
+            resp['msg']="Somehing went wrong!, please contact to system administrator..." + str(e)
             print(str(resp['msg']))
             return HttpResponse(json.dumps(resp), content_type="application/json")
         print('final')
@@ -538,6 +629,7 @@ def save_project(request):
     else:
         return HttpResponse("<h1>404 - Page not found...")
 
+@login_required(login_url='/accounts/login')
 def delete_project(request):
     try:
         id = request.GET['id']
@@ -548,6 +640,7 @@ def delete_project(request):
     return HttpResponseRedirect("/role")
 
 # End Project Views
+@login_required(login_url='/accounts/login')
 def employee(request):
     emp_list = Emp_Master.objects.all()
     context = {
@@ -556,7 +649,9 @@ def employee(request):
     }
     return render(request, 'Employee/Employees.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_emp(request):
+    
     card_header=''
     employee = {}
     data =  request.GET
@@ -581,13 +676,13 @@ def manage_emp(request):
             employee = Emp_Master.objects.filter(Emp_Id=id).first()
             Desg_Active_List = Designation_Master.objects.filter(Desg_Status=True,Dept_Id = employee.Dept_Id)
             print(employee.Dept_Id)
-            card_header='Edit Employee: ' +employee.First_Name + " " +employee.Middle_Name + " " +employee.Last_Name + "(Emp Id: " + str(employee.Emp_Id) + ")"
+            card_header='Edit Employee: ' +employee.first_name + " " +employee.Middle_Name + " " +employee.last_name + "(Emp Id: " + str(employee.Emp_Id) + ")"
 
         if details != '':
             employee = Emp_Master.objects.filter(Emp_Id=details).first()
             Desg_Active_List = Designation_Master.objects.filter(Desg_Status=True,Dept_Id = employee.Dept_Id)
             print(employee.Role_Id)
-            card_header='Details of Employee: '+employee.First_Name + " " +employee.Middle_Name + " " +employee.Last_Name + "(Emp Id: " + str(employee.Emp_Id) + ")"
+            card_header='Details of Employee: '+employee.first_name + " " +employee.Middle_Name + " " +employee.last_name + "(Emp Id: " + str(employee.Emp_Id) + ")"
  
 
     print('Desg_Active_List: ' +str(Desg_Active_List))
@@ -601,6 +696,7 @@ def manage_emp(request):
     }
     return render(request, 'Employee/manage_emp.html',context)
 
+@login_required(login_url='/accounts/login')
 def Get_Designation_EMP(request):
     if request.method == 'GET':
         data =  request.GET
@@ -626,7 +722,7 @@ def Get_Designation_EMP(request):
         
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
-
+@login_required(login_url='/accounts/login')
 def save_emp(request):
     if request.method == 'POST':
         data =  request.POST
@@ -638,7 +734,7 @@ def save_emp(request):
         print("------------------End All Key value Pairs-------------")
         
         resp = {'status':'failed', 'msg': ''}
-        Emp_Status=''
+        is_active=''
         # Drop Down Validations
         if 'Dept_Id' not in data:
             resp['status'] = 'failed'
@@ -660,23 +756,23 @@ def save_emp(request):
             resp['msg']= "Please select Gender"
             return HttpResponse(json.dumps(resp), content_type="application/json")   
 
-        if 'Emp_Status' in data:
-            Emp_Status = data['Emp_Status']
-            if Emp_Status == 'on':
-                Emp_Status=True
+        if 'is_active' in data:
+            is_active = data['is_active']
+            if is_active == 'on':
+                is_active=True
         else:
-            Emp_Status=False              
+            is_active=False              
 
         # Drop Down End of Validations
 
         # Get and set variables
-        Email_ID = data['Email_ID']
-        First_Name=data['First_Name']
+        email = data['Email_ID']
+        first_name=data['first_name']
         Middle_Name=data['Middle_Name']
-        Last_Name=data['Last_Name']
+        last_name=data['last_name']
         Contact_Number=re.sub('[^0-9]+', '', data['Contact_Number'])
         print(Contact_Number)
-        Joining_Date=data['Joining_Date']
+        date_joined=data['Joining_Date']
         Birth_Date=data['Birth_Date']
 
         Dept_Id= data['Dept_Id']
@@ -695,17 +791,17 @@ def save_emp(request):
 
         #Null values validation
 
-        if Email_ID is None:
+        if email is None:
             resp['status'] = 'failed'
             resp['msg']= "Email Id is mandatory, please add Name"
             return HttpResponse(json.dumps(resp), content_type="application/json")
                 
-        if First_Name is None:
+        if first_name is None:
             resp['status'] = 'failed'
             resp['msg']= "First Name is mandatory, please add Name"
             return HttpResponse(json.dumps(resp), content_type="application/json")
                 
-        if Last_Name is None:
+        if last_name is None:
             resp['status'] = 'failed'
             resp['msg']= "Last Name is mandatory, please add Name"
             return HttpResponse(json.dumps(resp), content_type="application/json")
@@ -715,7 +811,7 @@ def save_emp(request):
             resp['msg']= "Contact Number is mandatory, please add Name"
             return HttpResponse(json.dumps(resp), content_type="application/json")
 
-        if Joining_Date is None:
+        if date_joined is None:
             resp['status'] = 'failed'
             resp['msg']= "Please select Joining Date"
             return HttpResponse(json.dumps(resp), content_type="application/json")
@@ -734,7 +830,7 @@ def save_emp(request):
 
             Role= Role_Master.objects.filter(Role_Id=Role_Id).first()
             print(Role.Role_Name)
-            isExist = Emp_Master.isExists(Email_ID)
+            isExist = Emp_Master.isExists(email)
             print(isExist)
             print('Desg ' + str(Desg))
             Emp_Id  = ''
@@ -746,25 +842,41 @@ def save_emp(request):
                 
                 if isExist == True:
                     resp['status'] = 'failed'
-                    resp['msg']="Email id '"+Email_ID+"' is already exist, please use other Email id"
+                    resp['msg']="Email id '"+email+"' is already exist, please use other Email id"
                     print(str(resp['msg']))
                     return HttpResponse(json.dumps(resp), content_type="application/json")
-                
+                # create_user
+                pswd = Emp_Master.objects.make_random_password(length=14)
+
                 save_Emp = Emp_Master(
-                        Email_ID=Email_ID, 
-                        First_Name = First_Name,
+                        email=email, 
+                        password = pswd,
+                        first_name = first_name,
                         Middle_Name = Middle_Name,
-                        Last_Name=Last_Name,
+                        last_name=last_name,
                         Dept_Id=Dept,
                         Contact_Number=Contact_Number,
-                        Joining_Date=Joining_Date,
+                        date_joined=date_joined,
                         Desg_Id=Desg,
                         Role_Id=Role,
                         Emp_Sex=Emp_Sex,
-                        Birth_Date=Birth_Date,
-                        Emp_Status=True
+                        Birth_Date=Birth_Date
                     )
                 save_Emp.save()
+
+                subject = "Id creation in Roster Mangement"  
+                msg     = f"""
+                            Dear {first_name} {Middle_Name} {last_name},</br>
+                            Your id has been created in Roster Mangement, please use below password to login. </br> 
+                            Password: {pswd}."""
+                from_id = "info@lbmrecruitment.com.au"
+                res     = send_mail(subject, msg, from_id, email)  
+                if(res == 1):  
+                    msg = "Mail Sent Successfuly"  
+                else:  
+                    msg = "Mail could not sent"  
+
+
                 messages.success(request, "Employee added successfully")   
                 resp['status'] = 'success'
                 return HttpResponse(json.dumps(resp), content_type="application/json")   
@@ -772,18 +884,18 @@ def save_emp(request):
                     
             else:
                 Emp_Master.objects.filter(Emp_Id = Emp_Id).update(
-                    Email_ID=Email_ID, 
-                    First_Name = First_Name,
+                    email=email, 
+                    first_name = first_name,
                     Middle_Name = Middle_Name,
-                    Last_Name=Last_Name,
+                    last_name=last_name,
                     Dept_Id=Dept,
                     Contact_Number=Contact_Number,
-                    Joining_Date=Joining_Date,
+                    date_joined=date_joined,
                     Desg_Id=Desg,
                     Role_Id=Role,
                     Emp_Sex=Emp_Sex,
                     Birth_Date=Birth_Date,
-                    Emp_Status=Emp_Status,
+                    is_active=is_active,
                     Modified_Date= datetime.datetime.now() 
                     )
                 resp['status'] = 'success'
@@ -802,7 +914,8 @@ def save_emp(request):
         
     else:
         return HttpResponse("<h1>404 - Page not found...")
-    
+
+@login_required(login_url='/accounts/login')
 def delete_emp(request):
     try:
         id = request.GET['id']
@@ -815,6 +928,7 @@ def delete_emp(request):
 # End Employee Views
 
 # Shift Views
+@login_required(login_url='/accounts/login')
 def shift(request):
     shift_list = Shift_Master.objects.all()
     context = {
@@ -823,6 +937,7 @@ def shift(request):
     }
     return render(request, 'Employee/Shift/Shifts.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_shift(request):
     card_header=''
     shift = {}
@@ -851,6 +966,7 @@ def manage_shift(request):
     }
     return render(request, 'Employee/Shift/manage_shift.html',context)
 
+@login_required(login_url='/accounts/login')
 def delete_shift(request):
     try:
         id = request.GET['id']
@@ -860,6 +976,7 @@ def delete_shift(request):
         messages.error(request,"Somehing went wrong!, please contact to system administrator...")
     return HttpResponseRedirect("/shift")
 
+@login_required(login_url='/accounts/login')
 def save_shift(request):
     if request.method == 'POST':
         data =  request.POST
@@ -930,6 +1047,7 @@ def save_shift(request):
 # End Shift Views
 
 # Assign Shift Views
+@login_required(login_url='/accounts/login')
 def assign_shift(request):
     assign_shift_list = Employee_Shift_Master.objects.all()
     context = {
@@ -938,11 +1056,12 @@ def assign_shift(request):
     }
     return render(request, 'Employee/Shift/Assign_Shift.html',context)
 
+@login_required(login_url='/accounts/login')
 def manage_assign_shift(request):
     card_header=''
     assign_shift = {}
     data =  request.GET
-    Emp_Active_List = Emp_Master.objects.filter(Emp_Status=True).all()
+    Emp_Active_List = Emp_Master.objects.filter(is_active=True).all()
     Shift_Active_List = Shift_Master.objects.all()
     id = ''
     details=''
@@ -970,6 +1089,7 @@ def manage_assign_shift(request):
     }
     return render(request, 'Employee/Shift/manage_assign_shift.html',context)
 
+@login_required(login_url='/accounts/login')
 def Get_Assign_Shifts_Time(request):
     resp = {'status':'failed','Shift_Start_Time': '','Shift_End_Time': ''}
     Shift_Id=''
@@ -1002,6 +1122,7 @@ def Get_Assign_Shifts_Time(request):
         print(e)
         return HttpResponse(json.dumps(resp), content_type="application/json")
 
+@login_required(login_url='/accounts/login')
 def delete_assign_shift(request):
     try:
         id = request.GET['id']
@@ -1011,6 +1132,7 @@ def delete_assign_shift(request):
         messages.error(request,"Somehing went wrong!, please contact to system administrator...")
     return HttpResponseRedirect("/assign_shift")
 
+@login_required(login_url='/accounts/login')
 def save_assign_shift(request):
     if request.method == 'POST':
         data =  request.POST
@@ -1136,6 +1258,7 @@ def save_assign_shift(request):
         return HttpResponse("<h1>404 - Page not found...")
 
 # End Assign Shift Views
+@login_required(login_url='/accounts/login')
 def shift_calender(request):
     assign_shift_list = Employee_Shift_Master.objects.all()
     emp_active_list = Emp_Master.objects.all()
@@ -1148,6 +1271,7 @@ def shift_calender(request):
     }
     return render(request, 'Employee/Shift/Shift_Calender.html',context)
 
+@login_required(login_url='/accounts/login')
 def Get_Assigned_Shifts(request):
     if request.method == 'GET':
         data =  request.GET
@@ -1190,6 +1314,7 @@ def Get_Assigned_Shifts(request):
 # End Shift Calender
 
 # Attendance
+@login_required(login_url='/accounts/login')
 def timesheet(request):
     timesheet_list = Attendance_Master.objects.all()
     context = {
@@ -1200,8 +1325,9 @@ def timesheet(request):
         print(str(t.Attendance_Date))
     return render(request, 'Employee/Attendance/Timesheets.html',context)
 
+@login_required(login_url='/accounts/login')
 def mark_attendance(request):
-    Emp_Active_List = Emp_Master.objects.filter(Emp_Status=True).all()
+    Emp_Active_List = Emp_Master.objects.filter(is_active=True).all()
     timesheet_list_today = Attendance_Master.objects.filter(Attendance_Date=datetime.date.today())
     Shift_Details = Employee_Shift_Master.objects.filter()
     card_header='Mark the attendance' 
@@ -1214,6 +1340,7 @@ def mark_attendance(request):
     }
     return render(request, 'Employee/Attendance/Mark_Attendance.html',context)
 
+@login_required(login_url='/accounts/login')
 def Clock_In_Clock_Out_Old(request):
     if request.method == 'POST':
         data =  request.POST
@@ -1225,6 +1352,7 @@ def Clock_In_Clock_Out_Old(request):
         print("------------------End All Key value Pairs-------------")
         
         Emp_Id=''
+        Emp=''
         Attendance_Id=''
         btn_clock_in_clock_out=''
         Att_Type_Code = ''
@@ -1234,6 +1362,7 @@ def Clock_In_Clock_Out_Old(request):
 
         if 'Emp_Id' in data:
             Emp_Id = data['Emp_Id']
+            Emp = Emp_Master.objects.filter(Emp_Id = Emp_Id).first()
         if 'Attendance_Id' in data:
             Attendance_Id = data['Attendance_Id']
         if 'btn_clock_in_clock_out' in data:
@@ -1263,15 +1392,15 @@ def Clock_In_Clock_Out_Old(request):
             print(Att_Type_Code)
             if btn_clock_in_clock_out == "Punch In":
                 
-                # save_attendance = Attendance_Master(
-                #     Emp_Id=Emp,
-                #     Attendance_Date=current_Date,
-                #     Clock_In_Time = current_Time,
-                #     Attendance_Type_Id = Attendance_Type.objects.filter(Attendance_Type_Code = Att_Type_Code).first()
-                #     )
-                # save_attendance.save()
+                save_attendance = Attendance_Master(
+                    Emp_Id=Emp,
+                    Attendance_Date=current_Date,
+                    Clock_In_Time = current_Time,
+                    Attendance_Type_Id = Attendance_Type.objects.filter(Attendance_Type_Code = Att_Type_Code).first()
+                    )
+                save_attendance.save()
                 resp['msg']=str("Attendance has been marked successfully for user: " + 
-                shift_details_today.Emp_Id.First_Name + " " + shift_details_today.Emp_Id.Middle_Name +  " " + shift_details_today.Emp_Id.Last_Name)
+                shift_details_today.Emp_Id.first_name + " " + shift_details_today.Emp_Id.Middle_Name +  " " + shift_details_today.Emp_Id.last_name)
             
             elif btn_clock_in_clock_out == "Punch Out":
                 print("test")
@@ -1286,7 +1415,7 @@ def Clock_In_Clock_Out_Old(request):
                 print(att_Type_Code.Attendance_Type_Name)
 
                 resp['msg'] =str("Clocked out successfully for user: " +
-                shift_details_today.Emp_Id.First_Name + " " + shift_details_today.Emp_Id.Middle_Name +  " " + shift_details_today.Emp_Id.Last_Name)
+                shift_details_today.Emp_Id.first_name + " " + shift_details_today.Emp_Id.Middle_Name +  " " + shift_details_today.Emp_Id.last_name)
             
             resp['status'] = 'success'
             print(str(resp['status'] ))
@@ -1296,7 +1425,8 @@ def Clock_In_Clock_Out_Old(request):
         except Exception as e:
             resp['msg'] =str("Something went wrong please contact to system admin." + str(e))
             return HttpResponse(json.dumps(resp), content_type="application/json")
-            
+
+@login_required(login_url='/accounts/login')         
 def Clock_In_Clock_Out(request):
     if request.method == 'POST':
         data =  request.POST
@@ -1339,7 +1469,7 @@ def Clock_In_Clock_Out(request):
                 save_attendance.save()
                 
                 resp['msg']=str("Attendance has been marked successfully for user: " + 
-                Emp.First_Name + " " + Emp.Middle_Name +  " " + Emp.Last_Name)
+                Emp.first_name + " " + Emp.Middle_Name +  " " + Emp.last_name)
             else:
                 Attendance_Master.objects.filter(Attendance_Id = Attendance_Id).update(
                     Clock_Out_Time = current_Time,
@@ -1347,7 +1477,7 @@ def Clock_In_Clock_Out(request):
                 )
                 print('Out')
                 resp['msg']=str("Attendance has been marked successfully for user: " + 
-                Emp.First_Name + " " + Emp.Middle_Name +  " " + Emp.Last_Name)
+                Emp.first_name + " " + Emp.Middle_Name +  " " + Emp.last_name)
             
             resp['status'] = 'success'
         except Exception as e:
@@ -1355,6 +1485,7 @@ def Clock_In_Clock_Out(request):
             resp['msg'] =str("Something went wrong please contact to system admin." + str(e))
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
+@login_required(login_url='/accounts/login')
 def Get_Shift_Details(request):
     resp = {'Shift_Start_Time': '','Shift_End_Time': '', 'attendance_Status': None, 'Attendance_Id':'','Emp_Shift_Id':''}
     if request.method == 'GET':
@@ -1402,6 +1533,7 @@ def Get_Shift_Details(request):
     print('attendanc marked:' + str(resp['attendance_Status']))
     return HttpResponse(json.dumps(resp), content_type="application/json")
 
+@login_required(login_url='/accounts/login')
 def attendance_calender(request):
     assign_shift_list = Employee_Shift_Master.objects.all()
     emp_active_list = Emp_Master.objects.all()
@@ -1414,6 +1546,7 @@ def attendance_calender(request):
     }
     return render(request, 'Employee/Attendance/Attendance_Calender.html',context)
 
+@login_required(login_url='/accounts/login')
 def Get_Calender_Details(request):
     resp = {'status':'failed', 'shift_data': ''}
     if request.method == 'GET':
@@ -1430,7 +1563,7 @@ def Get_Calender_Details(request):
         #End Get the data from models
 
         print(EMP)
-        emp_Joining_Date = EMP.Joining_Date
+        emp_Joining_Date = EMP.date_joined
         print(emp_Joining_Date)
         print(attendance_mark_details)
 
@@ -1439,7 +1572,7 @@ def Get_Calender_Details(request):
         Final_Json_Data=[]
         Already_Added_Dates=[]
         bg_Color = '' 
-        delta = datetime.datetime.now().date() - emp_Joining_Date
+        delta = datetime.datetime.now().date() - emp_Joining_Date.date()
         print(delta.days)
         print("start -------------------------")
   
@@ -1495,7 +1628,7 @@ def Get_Calender_Details(request):
         while i<(delta.days+1):
             dt = emp_Joining_Date + timedelta(days = i)
             # print("Yesterday was: ", dt)
-            dt_diff = + (dt-datetime.date.today()).days
+            dt_diff = + (dt.date() - datetime.date.today()).days
             print(str(dt_diff)+ ' i: ' + str(i) + ' delta days: ' + str(delta.days+1) + ' dt: ' + str(dt))
             if(str(dt_diff) not in Already_Added_Dates):
                 test = Employee_Shift_Master.objects.filter(

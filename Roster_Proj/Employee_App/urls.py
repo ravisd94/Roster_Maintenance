@@ -1,10 +1,12 @@
 from django.urls import path,include
 from . import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     #Auth
-    path('login', views.login, name="login"),
-
+    path('accounts/login', views.user_login, name="login"),
+    path('accounts/logout', views.user_logout, name="logout"),
     path('', views.home, name="home"),
     # Department Urls
     path('department', views.department, name="department"),
@@ -73,6 +75,5 @@ urlpatterns = [
     path('attendance/Clock_In_Clock_Out', views.Clock_In_Clock_Out, name="Clock_In_Clock_Out"),
     path('attendance/calender', views.attendance_calender, name="attendance_calender"),
     path('Get_Calender_Details', views.Get_Calender_Details, name="Get_Calender_Details"),
-    
     # End Attendance
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

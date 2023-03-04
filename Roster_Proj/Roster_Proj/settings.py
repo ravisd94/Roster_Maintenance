@@ -20,6 +20,7 @@ TEMPLATES_DIR=os.path.join(BASE_DIR,'templates')
 STATIC_DIR=os.path.join(BASE_DIR,'static')
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -55,6 +56,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Roster_Proj.urls'
+AUTH_USER_MODEL = 'Employee_App.Emp_Master'
 
 TEMPLATES = [
     {
@@ -126,6 +128,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     STATIC_DIR,
 ]
+
+MEDIA_URL  = '/media/'
+MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
+
 # (
 #     # location of your application, should not be public web accessible 
 #     './static',
@@ -135,7 +141,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 MESSAGE_TAGS = {
@@ -145,3 +152,15 @@ MESSAGE_TAGS = {
         messages.WARNING: 'alert-warning',
         messages.ERROR: 'alert-danger',
  }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'app.peoplesource@gmail.com'
+EMAIL_HOST_PASSWORD = 'qmerqaurwcanxrqc'
+#EMAIL_HOST = 'smtpout.secureserver.net'
+#EMAIL_HOST_USER = 'website.enquiry@instaday.in'
+#EMAIL_HOST_PASSWORD = '!nst@DayW3b$!te22'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+

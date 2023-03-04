@@ -19,6 +19,10 @@ Models Migrations:
 python manage.py makemigrations
 python manage.py migrate 
 
+python manage.py createsuperuser
 //Admin Credentials
-id: codestack
-pw: CodeStack@123
+b 
+id: digiweb@test.com
+pw: digiweb@123
+
+

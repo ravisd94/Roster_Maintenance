@@ -76,7 +76,7 @@
                       <!-- Add the bg color to the header using any of the bg-* classes -->
                       <div class="widget-user-header text-white"
                            style="background: url('/static/assets_New/img/photo1.png') center center;">
-                        <h3 class="widget-user-username text-right">{{employee.First_Name}} {{employee.Middle_Name}} {{employee.Last_Name}}</h3>
+                        <h3 class="widget-user-username text-right">{{employee.first_name}} {{employee.Middle_Name}} {{employee.last_name}}</h3>
                         <h5 class="widget-user-desc text-right">{{employee.Desg_Id}}</h5>
                       </div>
                       <div class="widget-user-image">
@@ -122,9 +122,9 @@
 
                         <div class="col-4">
                             <div class="form-group">
-                                <label for="First_Name">First Name</label>
-                                <input type="text" name="First_Name" class="form-control" id="First_Name" 
-                                    placeholder="Enter First Name" value='{% if employee.First_Name %}{{employee.First_Name}}{% endif %}'
+                                <label for="first_name">First Name</label>
+                                <input type="text" name="first_name" class="form-control" id="first_name" 
+                                    placeholder="Enter First Name" value='{% if employee.first_name %}{{employee.first_name}}{% endif %}'
                                     {% if details != '' %} readonly  {% endif%}>
                             </div>       
                         </div>
@@ -140,9 +140,9 @@
 
                         <div class="col-4">
                             <div class="form-group">
-                                <label for="Last_Name">Last Name</label>
-                                <input type="text" name="Last_Name"  class="form-control"placeholder="Enter Last Name" 
-                                  value='{% if employee.Last_Name %}{{employee.Last_Name}}{% endif %}'
+                                <label for="last_name">Last Name</label>
+                                <input type="text" name="last_name"  class="form-control"placeholder="Enter Last Name" 
+                                  value='{% if employee.last_name %}{{employee.last_name}}{% endif %}'
                                   {% if details != '' %} readonly  {% endif%}>
                             </div>       
                         </div>
@@ -151,14 +151,14 @@
                           <div class="form-group">
                             <label for="Email_ID">Email address</label>
                             <input type="email" name="Email_ID" class="form-control"  placeholder="Enter email"
-                            value='{% if employee.Email_ID %}{{employee.Email_ID}}{% endif %}'
+                            value='{% if employee.email %}{{employee.email}}{% endif %}'
                             {% if details != '' %} readonly {% endif%}>
                           </div>
                         </div>
 
                         <div class="col-4">
                           <div class="form-group clearfix mb-1"  >
-                            <label for="Last_Name">Gender</label><br>
+                            <label for="last_name">Gender</label><br>
                               <div class="icheck-primary d-inline ">
                                 <input  value="Male" type="radio" id="radioPrimary1" name="Emp_Sex" 
                                 {% if employee.Emp_Sex and employee.Emp_Sex == "Male" %}checked {%endif%}
@@ -191,7 +191,7 @@
                             <label for="Emp_Status">Status</label>
                             <div class="switchToggle" >
                                 <input type="checkbox" class="form-control" name="Emp_Status" id="switch"
-                                {% if employee.Emp_Status == True %}
+                                {% if employee.is_active == True %}
                                   checked
                                   {% endif %}
                                 {% if details != '' %} disabled {% endif%}>
@@ -233,13 +233,13 @@
                               <label>Joining Date</label>
                                 <div class="input-group date" id="reservationdate1" data-target-input="nearest">
                                   <input type="date" class="form-control datetimepicker-input" name="Joining_Date"   
-                                  value="{% if employee.Joining_Date %}{{ employee.Joining_Date|date:'Y-m-d'}}{% endif %}" 
+                                  value="{% if employee.date_joined %}{{ employee.date_joined|date:'Y-m-d'}}{% endif %}" 
                                     {% if details != '' %} disabled {% endif%} >
                                     {% comment %} <input type="text" name="Joining_Date" class="form-control datetimepicker-input" data-target="#reservationdate1" 
                                     data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask
                                     value="{% if employee.Joining_Date %}{{ employee.Joining_Date|date:'m d Y' }}{% endif %}"
                                     {% if details != '' %} disabled {% endif%}>
-                                    <div class="input-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
+                                    <div class="inputa-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
                                         <div class="input-group-text"><i class="fa fa-calendar" ></i></div>
                                     </div> {% endcomment %}
                                 </div>
@@ -354,7 +354,7 @@
                 <!-- /.card-body -->
                 <div class="card-footer">
                   {% if details != '' %}
-                    <a href="/employee"  class="btn btn-warning ">
+                    <a    class="btn btn-warning " onClick="javascript:history.go(-1);">
                       <i class="fa-regular fa-circle-left px-1"></i>
                       Back
                     </a>
@@ -369,9 +369,15 @@
                         Submit 
                         {% else %} 
                         <i class="fa-solid fa-file-pen px-1"></i>
-                         Update {% endif%}
+                         Update 
+                         {% endif%}
                       </button>
-                      <a href="/employee" class="btn btn-danger float-right ml-2">
+                      <a class="btn btn-danger float-right ml-2" 
+                      {% if request.session.user_is_superuser == 1 %} 
+                        href="/employee"
+                      {% else %} 
+                        href="/employee/manage?details={{request.session.user_Emp_Id}}"
+                      {% endif %}>
                         <i class="fa-solid fa-xmark px-1"></i>
                         Cancel
                       </a>
@@ -433,10 +439,10 @@
           required: true,
           Email_ID: true,
         },
-        First_Name: {
+        first_name: {
           required: true,
         },
-        Last_Name: {
+        last_name: {
           required: true
         },
       },
@@ -445,10 +451,10 @@
           required: "Please enter a Email address",
           Email_ID: "Please enter a vaild Email  address"
         },
-        First_Name: {
+        first_name: {
           required: "Please enter a First Name"
         },
-        Last_Name: {
+        last_name: {
           required: "Please enter a Last Name",
         }
       },

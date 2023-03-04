@@ -3,6 +3,14 @@ from django.db import models
 from datetime import datetime
 from django.utils import timezone
 
+from django.contrib.auth.models import AbstractUser
+from .manager import UserManager
+
+
+from PIL import Image
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 # Create your models here.
 
@@ -70,6 +78,8 @@ class Project_Master(models.Model):
     Point_of_Contact_Email=models.CharField(max_length=100, blank=True, unique = True)
     Proj_Start_Date=models.DateField(blank=True)
     Proj_End_Date=models.DateField(blank=True)
+    Proj_Status=models.BooleanField(default=True)
+    Proj_BarCode = models.ImageField(upload_to='images/')
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
     Modified_By=models.IntegerField(null=True,blank=True)
@@ -77,38 +87,59 @@ class Project_Master(models.Model):
 
     def __str__(self):
         return self.Proj_Name
-
+    
     def isExists(project):
         if Project_Master.objects.filter(Proj_Name = project):
             return True
         return False
+    
+    def save(self, *args, **kwargs):
+        if not self.pk: # generate and save the QR code only if the object is being created for the first time
+            # generate the QR code image
+            qr = qrcode.QRCode(version=1, box_size=10, border=5)
+            qr.add_data(self.Proj_Name)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            # save the QR code image to a buffer
+            buffer = BytesIO()
+            img.save(buffer, format='PNG')
+            self.Proj_BarCode.save(f'{self.Proj_Name}.png', ContentFile(buffer.getvalue()), save=False)
+            super().save(*args, **kwargs)
 
 
-class Emp_Master(models.Model):
+class Emp_Master(AbstractUser):
+    
+    email= models.EmailField(unique=True, max_length=254, verbose_name='email address')
+    username = None
+
     Emp_Id=models.AutoField(primary_key=True)
-    Email_ID=models.CharField(max_length=200, blank=True, unique = True) 
-    First_Name=models.CharField(max_length=100, blank=True)
     Middle_Name=models.CharField(max_length=100, blank=True)
-    Last_Name=models.CharField(max_length=100, blank=True)
     Contact_Number= models.CharField(max_length=10, blank=True) 
-    Joining_Date=models.DateField(blank=True)
-    Dept_Id = models.ForeignKey(Dept_Master, on_delete=models.CASCADE)
-    Desg_Id = models.ForeignKey(Designation_Master, on_delete=models.CASCADE)
-    Role_Id=models.ForeignKey(Role_Master, on_delete=models.CASCADE)
-    Project_Id=models.IntegerField(blank=True,null=True)
+    
+    Dept_Id = models.ForeignKey(Dept_Master, on_delete=models.CASCADE,null=True)
+    Desg_Id = models.ForeignKey(Designation_Master, on_delete=models.CASCADE,null=True)
+    Role_Id=models.ForeignKey(Role_Master, on_delete=models.CASCADE,null=True)
+    
+    Project_Id= models.ForeignKey(Project_Master, on_delete=models.CASCADE,null=True)
+    is_Project_Manager = models.BooleanField(default=False)
+
     Emp_Sex=models.CharField(max_length=100, blank=True)
-    Birth_Date=models.DateField(blank=True)
-    Emp_Status=models.BooleanField(default=True)
+    Birth_Date=models.DateField(blank=True,null=True)
+    First_Login = models.BooleanField(default=True)
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
     Modified_By=models.IntegerField(null=True,blank=True)
     Modified_Date=models.DateTimeField(auto_now=True) 
 
+    objects = UserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS=[]
+
     def __str__(self):
-        return self.First_Name + " " + self.Middle_Name + " " + self.Last_Name
+        return self.first_name + " " + self.Middle_Name + " " + self.last_name
 
     def isExists(email):
-        if Emp_Master.objects.filter(Email_ID = email):
+        if Emp_Master.objects.filter(email = email):
             return True
         return False
         

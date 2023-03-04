@@ -1,18 +1,19 @@
 {
-    "name": "Python: Django",
-    "type": "python",
-    "request": "launch",
-    "stopOnEntry": false,
-    "python": "${config.python.pythonPath}",
-    "program": "${workspaceRoot}/manage.py",
-    "args": [
-        "runserver",
-        "--noreload"
-    ],
-    "debugOptions": [
-        "WaitOnAbnormalExit",
-        "WaitOnNormalExit",
-        "RedirectOutput",
-        "DjangoDebugging"
+    "configurations": [
+        {
+            "name": "Python: Django",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\Roster_Proj\\manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "justMyCode": true,
+            "logToFile": true,
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "host": "localhost"
+        }
     ]
-},
+}

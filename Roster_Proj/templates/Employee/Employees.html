@@ -83,10 +83,10 @@
                     <tr>
                         {% for employee in employees %}
                         <th>{{ employee.Emp_Id }}</th>
-                        <td>{{ employee.First_Name }} {{ employee.Middle_Name }} {{ employee.Last_Name }}</td>
-                        <td>{{ employee.Email_ID }}</td>
+                        <td>{{ employee.first_name }} {{ employee.Middle_Name }} {{ employee.last_name }}</td>
+                        <td>{{ employee.email }}</td>
                         <td>
-                            {% if employee.Emp_Status == True %}
+                            {% if employee.is_active == True %}
                             <span class="badge badge-success">Active</span>
                             {% else %}
                             <span class="badge badge-danger">Inactive</span>

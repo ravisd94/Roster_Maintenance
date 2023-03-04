@@ -73,9 +73,9 @@
                         {% endif %}
                         {% for employee in employees %}
                             {% if assign_shift.Emp_Id and assign_shift.Emp_Id == employee.Emp_Id %}
-                            <option value="{{ employee.Emp_Id }}" selected>{{ employee.Email_ID }}</option>
+                            <option value="{{ employee.Emp_Id }}" selected>{{ employee.email }}</option>
                             {% else %}
-                            <option value="{{ employee.Emp_Id }}">{{ employee.Email_ID }}</option>
+                            <option value="{{ employee.Emp_Id }}">{{ employee.email }}</option>
                             {% endif %}
                         {% endfor %}
                 </select>
