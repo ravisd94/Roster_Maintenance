@@ -32,7 +32,11 @@ def user_login(request):
         email = data['email']
         password = data['password']
 
-        user = authenticate(request,email = email, password= password)
+        # user2 = Emp_Master.objects.get(Emp_Id = 3)
+        # user2.set_password('test')
+        # user2.save()
+
+        user = authenticate(request,email = 'ravi@test.com', password= "test")
         user1 = Emp_Master.objects.filter(Emp_Id = '2').first()
         if user is None:
             print('Invalid Credentials')
@@ -42,11 +46,12 @@ def user_login(request):
             request.session['user_email']= user.email
             request.session['user_Emp_Id']= user.Emp_Id
             request.session['user_is_superuser']= user.is_superuser
-            request.session['user_fullName']= 'Ravi Sakharam Dhondkar'
+            request.session['user_is_ProjectManager_or_SuperAdmin'] = True if user.Role_Id.Role_Name == 'Project Manager' or user.is_superuser == True else False
+            request.session['user_fullName']= user.first_name + " " + user.Middle_Name + " " + user.last_name
             request.session['user_last_login']= user.last_login.strftime("%d-%b-%y %I:%M %p")
             request.session['user_Gender']= user.Emp_Sex
             pswd = Emp_Master.objects.make_random_password(length=14)
-
+            print(request.session['user_is_ProjectManager_or_SuperAdmin'])
             subject = "Id creation in Roster Mangement"  
             msg = f"""
                 Dear Ravi Sakharam Dhondkar,
@@ -640,6 +645,28 @@ def delete_project(request):
     return HttpResponseRedirect("/role")
 
 # End Project Views
+
+# Profile Views 
+def profile(request):
+    emp = Emp_Master.objects.filter(Emp_Id = request.session.get('user_Emp_Id')).first()
+    Dept_Active_List = Dept_Master.objects.filter(Dept_Status=True).all()
+    Desg_Active_List = Designation_Master.objects.filter(Desg_Status=True,Dept_Id = emp.Dept_Id)
+    Role_Active_List = Role_Master.objects.filter(Role_Status=True).all()
+    Project_Active_List = Project_Master.objects.filter(Proj_Status=True).all()
+    card_header='Details of Employee: '+emp.first_name + " " +emp.Middle_Name + " " +emp.last_name + "(Emp Id: " + str(emp.Emp_Id) + ")"
+    context = {
+        'employee' : emp,
+        'card_header': card_header,
+        'departments' : Dept_Active_List,
+        'designations' : Desg_Active_List,
+        'roles': Role_Active_List,
+        'projects':Project_Active_List
+    }
+    return render(request, 'Employee/manage_emp.html',context)
+
+# End Profile Views
+
+# Employee Views
 @login_required(login_url='/accounts/login')
 def employee(request):
     emp_list = Emp_Master.objects.all()
@@ -658,6 +685,7 @@ def manage_emp(request):
     Dept_Active_List = Dept_Master.objects.filter(Dept_Status=True).all()
     Desg_Active_List = {}
     Role_Active_List = Role_Master.objects.filter(Role_Status=True).all()
+    Project_Active_List = Project_Master.objects.filter(Proj_Status=True).all()
     id = ''
     details=''
     for key, value in data.items():
@@ -692,6 +720,7 @@ def manage_emp(request):
         'departments' : Dept_Active_List,
         'designations' : Desg_Active_List,
         'roles': Role_Active_List,
+        'projects':Project_Active_List,
         'details' : details
     }
     return render(request, 'Employee/manage_emp.html',context)
@@ -736,6 +765,11 @@ def save_emp(request):
         resp = {'status':'failed', 'msg': ''}
         is_active=''
         # Drop Down Validations
+        if 'Proj_id' not in data:
+            resp['status'] = 'failed'
+            resp['msg']= "Please select Project from dropdown"
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+    
         if 'Dept_Id' not in data:
             resp['status'] = 'failed'
             resp['msg']= "Please select Depratment from dropdown"
@@ -774,7 +808,7 @@ def save_emp(request):
         print(Contact_Number)
         date_joined=data['Joining_Date']
         Birth_Date=data['Birth_Date']
-
+        Proj_id = data['Proj_id']
         Dept_Id= data['Dept_Id']
         Desg_Id=data['Desg_Id']
         Role_Id=data['Role_Id']
@@ -824,11 +858,11 @@ def save_emp(request):
         # End Null Values Validation
 
         try:
+            Proj = Project_Master.objects.filter(Proj_id=Proj_id).first()
             Desg = Designation_Master.objects.filter(Desg_Id = Desg_Id).first()
-        
             Dept = Dept_Master.objects.filter(Dept_Id =Dept_Id).first()
-
             Role= Role_Master.objects.filter(Role_Id=Role_Id).first()
+
             print(Role.Role_Name)
             isExist = Emp_Master.isExists(email)
             print(isExist)
@@ -854,13 +888,15 @@ def save_emp(request):
                         first_name = first_name,
                         Middle_Name = Middle_Name,
                         last_name=last_name,
-                        Dept_Id=Dept,
                         Contact_Number=Contact_Number,
                         date_joined=date_joined,
+                        Project_Id = Proj,
+                        Dept_Id=Dept,
                         Desg_Id=Desg,
                         Role_Id=Role,
                         Emp_Sex=Emp_Sex,
-                        Birth_Date=Birth_Date
+                        Birth_Date=Birth_Date,
+                        is_active= True
                     )
                 save_Emp.save()
 
@@ -888,9 +924,10 @@ def save_emp(request):
                     first_name = first_name,
                     Middle_Name = Middle_Name,
                     last_name=last_name,
-                    Dept_Id=Dept,
                     Contact_Number=Contact_Number,
                     date_joined=date_joined,
+                    Project_Id = Proj,
+                    Dept_Id=Dept,
                     Desg_Id=Desg,
                     Role_Id=Role,
                     Emp_Sex=Emp_Sex,
@@ -1496,9 +1533,14 @@ def Get_Shift_Details(request):
         print('Value %s' % (value) )
     print("------------------End All Key value Pairs-------------")
     # emp = Emp_Master.objects.filter(Emp_Id=data['Emp_Id']).first()
-        
+    Emp_Id= request.session.user_Emp_Id 
+    if 'Emp_Id' in data:
+        Emp_Id = data['Emp_Id']
+    else:
+        Emp_Id=[]
+
     is_Shift_Assigned = Employee_Shift_Master.objects.filter(
-        Emp_Id=data['Emp_Id'],
+        Emp_Id=Emp_Id,
         Start_Date__lte=datetime.date.today(),
         End_Date__gte=datetime.date.today()
         ).first()
@@ -1510,14 +1552,13 @@ def Get_Shift_Details(request):
         resp['Shift_End_Time']=str(is_Shift_Assigned.Shift_End_Time.strftime("%I:%M %p"))  
         resp['Emp_Shift_Id'] = str(is_Shift_Assigned.Emp_Shift_Id)
         
-
         shift_time_Minus_current_time = datetime.datetime.combine(datetime.date.today(), datetime.datetime.now().time()) - datetime.datetime.combine(datetime.date.today(), is_Shift_Assigned.Shift_Start_Time)
         delta_mins = shift_time_Minus_current_time.days * 24 + shift_time_Minus_current_time.seconds / 60.0
         print(delta_mins)
         # if(is_Shift_Assigned.Shift_Id.Shift_Id == '1'):
         #     if(+delta_mins > 30):
 
-        is_Att_Marked =Attendance_Master.is_attendance_marked(data['Emp_Id'],datetime.date.today())
+        is_Att_Marked =Attendance_Master.is_attendance_marked(Emp_Id,datetime.date.today())
     
         print(is_Att_Marked)
         if is_Att_Marked == False:
@@ -1525,10 +1566,6 @@ def Get_Shift_Details(request):
         else:
             resp['attendance_Status']=is_Att_Marked[0]
             resp['Attendance_Id'] = is_Att_Marked[1]
-        
-        
-                
-
 
     print('attendanc marked:' + str(resp['attendance_Status']))
     return HttpResponse(json.dumps(resp), content_type="application/json")

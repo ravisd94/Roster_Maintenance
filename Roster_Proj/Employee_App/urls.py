@@ -37,6 +37,9 @@ urlpatterns = [
     path('project/delete', views.delete_project, name="project/delete"),
     path('project/save_project', views.save_project,name="save_project"),
     # # End Project Urls
+    # # Profile Urls
+    path('profile', views.profile, name="profile"),
+    # # End Profile Urls
 
     # # Employee Urls
     path('employee', views.employee, name="employee"),

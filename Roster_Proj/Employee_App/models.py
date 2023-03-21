@@ -195,6 +195,8 @@ class Attendance_Master(models.Model):
     Attendance_Date=models.DateField()
     Clock_In_Time=models.TimeField(null=True,blank=True)
     Clock_Out_Time=models.TimeField(null=True,blank=True)
+    Break_Start_Time=models.TimeField(null=True,blank=True)
+    Break_End_Time=models.TimeField(null=True,blank=True)
     Created_By=models.IntegerField(null=True,blank=True)
     Created_Date=models.DateTimeField(default=timezone.now) 
     Modified_By=models.IntegerField(null=True,blank=True)

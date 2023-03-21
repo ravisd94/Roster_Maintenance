@@ -28,7 +28,9 @@
   <link rel="stylesheet" href="/static/assets_New/plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="/static/assets_New/plugins/summernote/summernote-bs4.min.css">
-
+<style rel="stylesheet">
+ 
+</style>
 {% endblock stylesheets %}
 
 {% block content %}
@@ -40,8 +42,16 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3><b>Dashboard</b></h3>
+            <h3><b>Welcome back {{request.session.user_fullName}}</b></h3>
           </div><!-- /.col -->
+          <div class="col-sm-6 ">
+            <button id="Emp_Id" name="Emp_Id"  href="{% url 'mark_attendance' %}" class="btn btn-info float-right mx-2" 
+            data-toggle="modal" data-target="#attendanceModal">
+              <i class="fa-solid fa-user-clock px-1"></i> 
+              Mark Attendance
+            </button>
+
+          </div>
         </div><!-- /.row -->
         <hr>
       </div><!-- /.container-fluid -->
@@ -631,6 +641,69 @@
     </section>
     <!-- /.content -->
 
+
+    <!-- Modal -->
+<div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="attendanceModalLabel">Mark Attendance</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          {% csrf_token %}
+          <div class="form-group row">
+            <div class="col-md-6">
+              <label for="attendanceDate">Attendance Date</label>
+              <label type="text" disabled class="form-control" >Test</label>
+            </div>
+            <div class="col-md-3">
+              <label for="attendanceDate">Start Time</label>
+              <input type="time" class="form-control" id="attendanceDate" required>
+            </div>
+            <div class="col-md-3">
+              <label for="attendanceDate">End Time</label>
+              <input type="date" class="form-control" id="attendanceDate" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-md-5">
+              <label for="clockIn">Clock In</label>
+              <input type="time" class="form-control" id="clockIn" required>
+            </div>
+            <div class="col-md-5">
+              <label for="clockOut">Clock Out</label>
+              <input type="time" class="form-control" id="clockOut" required>
+            </div>
+            <div class="col-md-2">
+              <label for="clockOut">Total Hrs.</label>
+              <input type="time" class="form-control" id="clockOut" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-md-6">
+              <label for="breakStart">Break Start</label>
+              <input type="time" class="form-control" id="breakStart" required>
+            </div>
+            <div class="col-md-6">
+              <label for="breakEnd">Break End</label>
+              <input type="time" class="form-control" id="breakEnd" required>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
   </div>
 
 {% endblock content %}
@@ -672,5 +745,56 @@
   <script src="/static/assets_New/js/pages/dashboard.js"></script>
   <!-- AdminLTE for demo purposes -->
   <script src="/static/assets_New/js/demo.js"></script>
+
+  <script>
+    $(function() {
+      $("#Emp_Id").click(function(e) {
+          alert($('option:selected', this).text());
+          e.preventDefault();
+          console.log(e);
+          var dataString = $(this).serialize();
+
+          $.ajax({
+              type: 'GET',
+              url: "{% url 'Get_Shift_Details' %}",
+              data: dataString,
+              success: function(data) {
+                $("#card_footer_mark_attendance").css("display", "block");
+                console.log('att id:' + data.attendance_Status)
+                if(data.attendance_Status == "No Shift")
+                {
+                  $("#btn_punch_in_punch_out").attr('disabled','disabled')
+                  .html('<i class="fa-solid fa-ban px-1"></i>')
+                  .addClass('btn float-right ml-2 btn btn-info')
+                  .text("No Shift is Mapped to user");
+                }
+                else if(data.attendance_Status == "Marked Clock In")
+                {
+                  $("#btn_punch_in_punch_out").removeAttr('disabled').removeClass('btn-success btn-info')
+                  .addClass('btn float-right ml-2 btn btn-danger').text("Punch Out")
+                }
+                else if(data.attendance_Status == false)
+                {
+                  $("#btn_punch_in_punch_out").removeAttr('disabled').removeClass('btn-danger btn-info')
+                  .addClass('btn float-right ml-2 btn btn-success').text("Punch In")
+                }
+                else
+                {
+                  $("#btn_punch_in_punch_out").attr('disabled','disabled').addClass('btn float-right ml-2 btn btn-info')
+                  .text("Attendance is already marked for selected employee " + data.attendance_Status);
+                }
+  
+                $("#Shift_Start_Time").val(data.Shift_Start_Time)
+                $("#Shift_End_Time").val(data.Shift_End_Time)
+                $("#Attendance_Id").val(data.Attendance_Id)
+                $("#Emp_Shift_Id").val(data.Emp_Shift_Id)
+                console.log(data.Shift_Start_Time)
+                console.log(data.Shift_End_Time)
+              }
+            });
+      });
+    });
+  
+  </script>
 
 {% endblock javascripts %}

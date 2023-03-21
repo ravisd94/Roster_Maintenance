@@ -188,9 +188,9 @@
                       
                         <div class="col-2" >
                           <div class="form-group">
-                            <label for="Emp_Status">Status</label>
+                            <label for="is_active">Status</label>
                             <div class="switchToggle" >
-                                <input type="checkbox" class="form-control" name="Emp_Status" id="switch"
+                                <input type="checkbox" class="form-control" name="is_active" id="switch"
                                 {% if employee.is_active == True %}
                                   checked
                                   {% endif %}
@@ -246,7 +246,28 @@
                               </div>
                           </div>
 
-                          <div class="col-4">
+                          <div class="col-6">
+                            <div class="form-group">
+                              <label for="Proj_id">Project</label>
+                              <select name="Proj_id" id="Proj_id"  class="form-control select2bs4" style="width: 100%;"
+                                  {% if details != '' %} disabled {% endif%} >
+                                  {% if not employee.Project_Id %}
+                                  <option value="0" disabled selected>Please Select Project</option>
+                                  {% else %}
+                                  <option value="0" disabled>Please Select Project</option>
+                                  {% endif %}
+                                  {% for project in projects %}
+                                      {% if employee.Project_Id and employee.Project_Id == project %}
+                                      <option value="{{ project.Proj_id }}" selected>{{ project.Proj_Name }}</option>
+                                      {% else %}
+                                      <option value="{{ project.Proj_id }}">{{ project.Proj_Name }}</option>
+                                      {% endif %}
+                                  {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="col-6">
                             <div class="form-group">
                               <label for="Dept_Id">Department</label>
                               <select name="Dept_Id" id="Dept_Id"  class="form-control select2bs4" style="width: 100%;"
@@ -267,7 +288,7 @@
                             </div>
                           </div>
 
-                          <div class="col-4">
+                          <div class="col-6">
                             <div class="form-group">
                               <label for="Desg_Id">Designation</label>
                               <select name="Desg_Id" id ="Desg_Id" class="form-control select2bs4" style="width: 100%;"
@@ -289,9 +310,9 @@
                             </div>
                           </div>
 
-                          <div class="col-4">
+                          <div class="col-6">
                             <div class="form-group">
-                              <label  for="Role_Id">Designation</label>
+                              <label  for="Role_Id">Role</label>
                               <select name="Role_Id" class="form-control select2bs4" style="width: 100%;"
                                 {% if details != '' %} disabled {% endif%}>
                                 {% if not employee.Role_Id %}
@@ -358,7 +379,13 @@
                       <i class="fa-regular fa-circle-left px-1"></i>
                       Back
                     </a>
-                    <a href="manage?id={{employee.Emp_Id }}"  class="btn btn-primary  float-right ml-2">
+                    <a 
+                    {% if request.path == '/employee/manage' %}  
+                    href="manage?id={{employee.Emp_Id }}"  
+                    {% elif request.path == '/profile'%}
+                    href="employee/manage?id={{employee.Emp_Id }}"
+                    {% endif %}
+                    class="btn btn-primary  float-right ml-2">
                       <i class="fa-regular fa-pen-to-square px-1"></i>
                       Edit
                     </a>
@@ -581,7 +608,16 @@
 
       }
       else{
-        window.location.href = "{% url 'employee' %}";
+        var u = "{{ request.session.user_Emp_Id }}";
+        var omHtml = "{{ employee.Emp_Id }}"
+        if(u === omHtml){
+          window.location.href = "{% url 'profile' %}";
+        }
+        else{
+          window.location.href = "{% url 'employee' %}";
+        }
+        
+        
       }
 
     }

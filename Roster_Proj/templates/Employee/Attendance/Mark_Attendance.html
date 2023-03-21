@@ -45,9 +45,51 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
 
+    <section class="" style="padding-top: 10px; padding-right: 0.5rem; padding-left: 0.5rem;">
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3><b>Timesheet</b></h3>
+              </div>
+              <div class="col-sm-6 ">
+                <a href="{% url 'mark_attendance' %}" class="btn btn-info float-right mx-2">
+                  <i class="fa-solid fa-user-clock px-1"></i> 
+                  Mark Attendance
+                </a>
+                {% comment %} <a href="{% url 'shift/manage' %}" class="btn btn-success float-right mx-2">
+                  <i class="fas fa-clock"> Clock in</i> 
+                </a> {% endcomment %}
+              </div>
+              <div class="col-12" style="font-size: .8rem;">
+                <a href="/"><i title="View" class="fa-solid fa-home"></i> Home</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i class="fa-solid fa-calendar-days"></i> Attendance</a>
+                <a><i class="fa-solid fa-chevron-right px-1"></i></a>
+                <a href=""><i title="View" class="fa-solid fa-table"></i> Timesheet</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% for message  in messages %}
+          {% comment %} <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div> {% endcomment %}
+          <div class="alert {{ message.tags }} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-check"></i> {{message}}</h5>
+          </div>
+        {% endfor %}
+
+      </div><!-- /.container-fluid -->
+    </section>
+    
     <section class="content my-1">
+      <div class="container-fluid">
       <div class="row">
-        <div class="col-md-12">
+          <div class="col-md-12">
           <div class="card card-secondary">
             <div class="card-header">
               <h3 class="card-title">Mark the Attendance</h3>
@@ -123,6 +165,7 @@
             <!-- /.card-body -->
           </div>
           <!-- /.card -->
+          </div>
         </div>
       </div>
     </section>
